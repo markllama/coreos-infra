@@ -1,0 +1,40 @@
+---
+#
+# Coordinate creating a coredns service container
+#
+
+#
+# Prepare the configuration space on the host
+#
+- name: Create coredns configuration directory
+  file:
+    path: /opt/coredns
+    mode: 0755
+    owner: root
+    group: root
+    state: directory
+
+- name: Create the CoreDNS configuration file
+  template:
+    dest: /opt/coredns/Corefile
+    src: Corefile.j2
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Create coredns zone file directory
+  file:
+    path: /opt/coredns/zones
+    mode: 0755
+    owner: root
+    group: root
+    state: directory
+
+
+- name: Copy the Zone Files
+  copy:
+    dest: "/opt/coredns/zones/{{ item.file }}"
+    src: "zones/{{ item.file }}"
+  loop: "{{ dns.zones }}"
+  tags:
+    - zones

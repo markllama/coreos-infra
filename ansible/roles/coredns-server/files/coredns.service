@@ -1,0 +1,14 @@
+[Unit]
+Description=CoreDNS Service Container
+After=network-online.target
+
+[Container]
+Image=docker.io/coredns/coredns:latest
+
+Volume=/etc/sysconfig/coredns:/etc/coredns
+Volume=/opt/coredns
+
+
+[Install]
+# Enable in multi-user boot
+WantedBy=multi-user.target default.target

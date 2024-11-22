@@ -1,0 +1,17 @@
+;
+; 
+;
+$ORIGIN lab.lamourine.org.
+@	IN  SOA ns1.lab.lamourine.org. markllama.gmail.com. (
+	       2024112205  ; serial number
+	       7200        ; refresh
+	       3600	    ; retry
+	       1209600	    ; expire 
+	       3600	    ; minimum
+)
+
+	IN NS ns1.lab.lamourine.org.
+	IN NS ns2.lab.lamourine.org.
+
+ns1	IN A  192.168.1.6
+ns2	IN A  192.168.1.7

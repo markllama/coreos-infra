@@ -1,0 +1,14 @@
+---
+#
+# The playbook creates a DNS server on the target hosts using CoreDNS
+# It populates the zone files from files/zones
+#
+- name: CoreDNS Server
+  hosts: dnsservers
+  become: true
+
+  vars_files:
+    - dns_services.yaml
+
+  roles:
+    - coredns-server

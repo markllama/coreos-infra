@@ -1,0 +1,15 @@
+---
+#
+#
+#
+dns:
+  forwarders:
+    - 192.168.2.1
+    - 1.1.1.1
+    - 1.0.0.1
+    
+  zones:
+    - fqdn: home.lamourine.org
+      file: home.lamourine.org.zone
+    - fqdn: lab.lamourine.org
+      file: lab.lamourine.org.zone

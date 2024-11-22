@@ -8,8 +8,8 @@ intel:
       ansible_host: 192.168.2.14
     intel2:
       ansible_host: 192.168.2.27
-#    intel3:
-#       ansible_host: 192.168.2.30
+    intel3:
+       ansible_host: 192.168.2.216
 rpi:
   vars:
     ansible_user: core
@@ -36,3 +36,7 @@ pilots:
 #    kvm-3:
 #      ansible_host: 192.168.2.31
       
+
+dnsservers:
+  hosts:
+    pi4-1:

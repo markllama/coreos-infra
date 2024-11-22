@@ -1,0 +1,13 @@
+#
+# A simple corefile for CoreDNS
+#
+.:53 {
+  cache
+  forward . {{ dns.forwarders|join(' ') }}
+}
+
+{% for zone in dns.zones %}
+{{ zone.fqdn}}:53 {
+  file zones/{{ zone.file }}
+}
+{% endfor %}
