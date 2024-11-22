@@ -1,0 +1,8 @@
+#
+#
+#
+nameserver 127.0.0.1
+{% for nameserver in dns.forwarders %}
+nameserver {{ nameserver }}
+{% endfor %}
+search {{ dns.search|join(' ') }}

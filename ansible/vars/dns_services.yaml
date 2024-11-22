@@ -13,3 +13,9 @@ dns:
       file: home.lamourine.org.zone
     - fqdn: lab.lamourine.org
       file: lab.lamourine.org.zone
+
+  search:
+    - lan    # mDNS from Google Mesh DNS
+    - home.lamourine.org
+    - lab.lamourine.org
+    - lamourine.org

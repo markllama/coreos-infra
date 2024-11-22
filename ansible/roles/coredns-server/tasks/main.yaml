@@ -6,35 +6,69 @@
 #
 # Prepare the configuration space on the host
 #
-- name: Create coredns configuration directory
-  file:
-    path: /opt/coredns
-    mode: 0755
-    owner: root
-    group: root
-    state: directory
+- name: Place the Configration Files
+  block:
+    - name: Create coredns configuration directory
+      file:
+        path: /opt/coredns
+        mode: 0755
+        owner: root
+        group: root
+        state: directory
 
-- name: Create the CoreDNS configuration file
-  template:
-    dest: /opt/coredns/Corefile
-    src: Corefile.j2
-    mode: 0644
-    owner: root
-    group: root
+    - name: Create the CoreDNS configuration file
+      template:
+        dest: /opt/coredns/Corefile
+        src: Corefile.j2
+        mode: 0644
+        owner: root
+        group: root
+      notify: Restart CoreDNS Service
 
-- name: Create coredns zone file directory
-  file:
-    path: /opt/coredns/zones
-    mode: 0755
-    owner: root
-    group: root
-    state: directory
+    - name: Create coredns zone file directory
+      file:
+        path: /opt/coredns/zones
+        mode: 0755
+        owner: root
+        group: root
+        state: directory
 
+    - name: Copy the Zone Files
+      copy:
+        dest: "/opt/coredns/zones/{{ item.file }}"
+        src: "zones/{{ item.file }}"
+      loop: "{{ dns.zones }}"
+      notify: Restart CoreDNS Service
+      tags:
+        - zones
 
-- name: Copy the Zone Files
-  copy:
-    dest: "/opt/coredns/zones/{{ item.file }}"
-    src: "zones/{{ item.file }}"
-  loop: "{{ dns.zones }}"
-  tags:
-    - zones
+- name: Prepare Services
+  block:
+    - name: Disable systemd-resolved - (avoid conflict with coredns)
+      service:
+        name: systemd-resolved
+        state: stopped
+        enabled: false
+
+    - name: Set static resolver file
+      template:
+        dest: /etc/resolv.conf
+        src: resolv.conf.j2
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Set systemd container file
+      copy:
+        dest: /etc/containers/systemd/coredns.container
+        src: coredns.container
+        owner: root
+        group: root
+        mode: 644
+      notify: Reload Systemd Units
+
+    - name: Enable and Start CoreDNS container
+      service:
+        name: coredns.service
+        state: started
+        enabled: true

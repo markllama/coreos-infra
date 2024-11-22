@@ -1,0 +1,28 @@
+[Unit]
+Description=CoreDNS Service Container
+After=network-online.target
+
+[Container]
+Image=docker.io/coredns/coredns:latest
+
+# Expect Corefile and zones/ within the working dir
+PodmanArgs=--workdir=/root
+
+PublishPort=53:53/udp
+#PublishPort=953:953/udp
+#PublishPort=53:53/tcp
+#PublishPort=953:953/tcp
+
+# Mount the coredns config dir into the container workingdir
+Volume=/opt/coredns:/root
+
+[Install]
+# Enable in multi-user boot
+WantedBy=multi-user.target default.target
+
+# sudo podman run --detach --rm \
+#       --name coredns \
+#       --publish 53:53/udp \
+#       --volume=/opt/coredns/:/root/ \
+#       --workdir=/root \
+#       coredns/coredns -conf /root/Corefile
