@@ -1,0 +1,14 @@
+---
+#
+# The playbook creates a web server with an SSL cert that identifies
+# a known network for Cloudflare Warp clients
+#
+- name: Cloudflare Beacon
+  hosts: cloudflare-beacons
+  become: true
+
+  vars_files:
+    - beacon_keys.yaml
+
+  roles:
+    - cloudflare-beacon

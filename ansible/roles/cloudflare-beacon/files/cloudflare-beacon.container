@@ -1,0 +1,16 @@
+[Unit]
+Description=A Cloudflare Beacon to identify a Known Network
+After=network-online.target
+
+[Container]
+Image=docker.io/nginx:latest
+PublishPort=8443:443/tcp
+
+Volume=/etc/cloudflare-beacon/default.conf:/etc/nginx/conf.d/default.conf:Z
+Volume=/etc/cloudflare-beacon/beacon.crt:/etc/nginx/beacon.crt:Z
+Volume=/etc/cloudflare-beacon/beacon.key:/etc/nginx/beacon.key:Z
+
+
+[Install]
+# Start by default on boot
+WantedBy=multi-user.target default.target

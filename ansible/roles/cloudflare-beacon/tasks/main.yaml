@@ -1,0 +1,24 @@
+---
+- name: Create config space for cloudflare beacon
+  file:
+    dest: /etc/cloudflare-beacon
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: Create nginx config file
+  template:
+    dest: /etc/cloudflare-beacon/default.conf
+    src: default.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+    
+- name: Create beacon configuration file
+  template:
+    dest: /etc/sysconfig/cloudflare-beacon
+    src: cloudflare-beacons.j2
+    owner: root
+    group: root
+    mode: 0644

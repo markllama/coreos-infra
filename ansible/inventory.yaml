@@ -40,3 +40,7 @@ pilots:
 dnsservers:
   hosts:
     pi4-1:
+
+cloudflare_beacons:
+  hosts:
+    pi4-1:
