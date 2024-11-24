@@ -4,11 +4,11 @@
 # a known network for Cloudflare Warp clients
 #
 - name: Cloudflare Beacon
-  hosts: cloudflare-beacons
+  hosts: cloudflare_beacons
   become: true
 
   vars_files:
-    - beacon_keys.yaml
+    - cloudflare.yaml
 
   roles:
     - cloudflare-beacon

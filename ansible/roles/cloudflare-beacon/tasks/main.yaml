@@ -18,7 +18,47 @@
 - name: Create beacon configuration file
   template:
     dest: /etc/sysconfig/cloudflare-beacon
-    src: cloudflare-beacons.j2
+    src: cloudflare-beacon.j2
     owner: root
     group: root
     mode: 0644
+
+- name: Check if the SSL files exist
+  stat:
+    path: "/etc/cloudflare-beacon/beacon.{{ item }}"
+  loop: [ 'key', 'pem' ]
+  register: cert_files
+
+- name: Create New Keys (if needed)
+  block:
+    - name: Create private key (RSA, 4096 bits)
+      community.crypto.openssl_privatekey:
+        path: /etc/cloudflare-beacon/beacon.key
+
+    - name: Create certificate signing request (CSR) for self-signed certificate
+      community.crypto.openssl_csr:
+        path: /etc/cloudflare-beacon/beacon.csr
+        privatekey_path: /etc/cloudflare-beacon/beacon.key
+        common_name: "{{ ansible_fqdn }}"
+        organization_name: Cloudflare Beacon
+        subject_alt_name:
+          - "DNS:{{ ansible_fqdn }}"
+      
+    - name: Create self-signed certificate from CSR
+      community.crypto.x509_certificate:
+        path: /etc/cloudflare-beacon/beacon.pem
+        privatekey_path: /etc/cloudflare-beacon/beacon.key
+        csr_path: /etc/cloudflare-beacon/beacon.csr
+        provider: selfsigned
+
+  when: (cert_files.results[0].stat.exists and cert_files.results[1].stat.exists) is false
+
+- name: Retrieve key and crt file for later use
+  block: 
+    - name: Fetch Key and Pem Files
+      fetch:
+        src: "/etc/cloudflare-beacon/beacon.{{ item }}"
+        dest: "files/cloudflare/"
+        flat: true
+      loop: [ 'key', 'pem']
+ 
