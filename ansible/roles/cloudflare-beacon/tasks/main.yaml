@@ -62,3 +62,12 @@
         flat: true
       loop: [ 'key', 'pem']
  
+
+- name: Examine the certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/cloudflare-beacon/beacon.pem
+  register: beacon_cert
+
+- name: Report the certificate fingerprint
+  debug:
+    msg: "Fingerprint: {{ beacon_cert.fingerprints.sha256 }}"
