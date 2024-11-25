@@ -23,6 +23,15 @@
     group: root
     mode: 0644
 
+- name: Create beacon systemd container file
+  template:
+    dest: /etc/containers/systemd/cloudflare-beacon.container
+    src: cloudflare-beacon.container.j2
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload Cloudflare Beacon Systemd Unit
+
 - name: Check if the SSL files exist
   stat:
     path: "/etc/cloudflare-beacon/beacon.{{ item }}"
