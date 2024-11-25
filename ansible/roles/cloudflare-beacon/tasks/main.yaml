@@ -14,15 +14,8 @@
     owner: root
     group: root
     mode: 0644
+  notify: Restart Cloudflare Beacon Systemd Unit
     
-- name: Create beacon configuration file
-  template:
-    dest: /etc/sysconfig/cloudflare-beacon
-    src: cloudflare-beacon.j2
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Create beacon systemd container file
   template:
     dest: /etc/containers/systemd/cloudflare-beacon.container
@@ -32,46 +25,50 @@
     mode: 0644
   notify: Reload Cloudflare Beacon Systemd Unit
 
-- name: Check if the SSL files exist
-  stat:
-    path: "/etc/cloudflare-beacon/beacon.{{ item }}"
-  loop: [ 'key', 'pem' ]
-  register: cert_files
-
-- name: Create New Keys (if needed)
+- name: Place or Create SSL files
   block:
-    - name: Create private key (RSA, 4096 bits)
-      community.crypto.openssl_privatekey:
-        path: /etc/cloudflare-beacon/beacon.key
+    - name: Copy the SSL files
+      copy:
+        dest: "/etc/cloudflare-beacon/beacon.{{ item }}"
+        src: "files/cloudflare/beacon.{{ item }}"
+        owner: root
+        group: root
+        mode: 0644
+      loop: [ 'key', 'pem' ]
+  rescue:
+    - name: Create files and get them back
+      when: ""
+      block:
+        - name: Create private key (RSA, 4096 bits)
+          community.crypto.openssl_privatekey:
+            path: /etc/cloudflare-beacon/beacon.key
 
-    - name: Create certificate signing request (CSR) for self-signed certificate
-      community.crypto.openssl_csr:
-        path: /etc/cloudflare-beacon/beacon.csr
-        privatekey_path: /etc/cloudflare-beacon/beacon.key
-        common_name: "{{ ansible_fqdn }}"
-        organization_name: Cloudflare Beacon
-        subject_alt_name:
-          - "DNS:{{ ansible_fqdn }}"
+        - name: Create certificate signing request (CSR) for self-signed certificate
+          community.crypto.openssl_csr:
+            path: /etc/cloudflare-beacon/beacon.csr
+            privatekey_path: /etc/cloudflare-beacon/beacon.key
+            common_name: "{{ ansible_fqdn }}"
+            organization_name: Cloudflare Beacon
+            subject_alt_name:
+              - "DNS:{{ ansible_fqdn }}"
       
-    - name: Create self-signed certificate from CSR
-      community.crypto.x509_certificate:
-        path: /etc/cloudflare-beacon/beacon.pem
-        privatekey_path: /etc/cloudflare-beacon/beacon.key
-        csr_path: /etc/cloudflare-beacon/beacon.csr
-        provider: selfsigned
+        - name: Create self-signed certificate from CSR
+          community.crypto.x509_certificate:
+            path: /etc/cloudflare-beacon/beacon.pem
+            privatekey_path: /etc/cloudflare-beacon/beacon.key
+            csr_path: /etc/cloudflare-beacon/beacon.csr
+            provider: selfsigned
 
-  when: (cert_files.results[0].stat.exists and cert_files.results[1].stat.exists) is false
-
-- name: Retrieve key and crt file for later use
-  block: 
-    - name: Fetch Key and Pem Files
-      fetch:
-        src: "/etc/cloudflare-beacon/beacon.{{ item }}"
-        dest: "files/cloudflare/"
-        flat: true
-      loop: [ 'key', 'pem']
- 
-
+        - name: Retrieve key and crt file for later use
+          block: 
+            - name: Fetch Key and Pem Files
+              fetch:
+                src: "/etc/cloudflare-beacon/beacon.{{ item }}"
+                dest: "files/cloudflare/"
+                flat: true
+              loop: [ 'key', 'pem']
+  notify: Restart Cloudflare Beacon Systemd Unit
+              
 - name: Examine the certificate
   community.crypto.x509_certificate_info:
     path: /etc/cloudflare-beacon/beacon.pem

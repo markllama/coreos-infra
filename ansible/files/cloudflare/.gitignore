@@ -1,0 +1,7 @@
+#
+# Do not store SSL files
+#
+*.key
+*.pem
+*.crt
+*.csr

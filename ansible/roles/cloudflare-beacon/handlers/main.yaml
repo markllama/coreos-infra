@@ -3,4 +3,9 @@
     name: cloudflare-beacon
     state: started
     daemon_reload: true
-    
+
+- name: Restart Cloudflare Beacon Systemd Unit
+  systemd_service:
+    name: cloudflare-beacon
+    state: restarted
+
