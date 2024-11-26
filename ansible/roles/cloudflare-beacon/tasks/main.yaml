@@ -1,6 +1,21 @@
 ---
+# Cloudflare Zero Trust can apply different tunneling policies based on the
+# location of the user device.  To detect known networks, the Warp client looks
+# for a set of well-known "beacons". If it detects one, it knows it is connected to
+# a specific Known Network.
+# 
+# A Beacon is simply a service responding to HTTPS queries that is encrypted with a
+# pre-defined x509 certificate. If the client can query one of the known web servers
+# and the response is encrypted by a known certificate, it can be assured that it is
+# connected to the matching network.
 #
+# In this case the beacon is an Nginx web server within a software container.
+# Since there is no additional content, the only configuration the container needs
+# is the simple Nginx configurarion file and the X509 certificate and key files.
+# The server process is managed as a quadlet, a systemd compatible software container.
+
 #
+# All of the service configuration files reside in /etc
 #
 - name: Create config space for cloudflare beacon
   file:
@@ -10,6 +25,10 @@
     mode: 0755
     state: directory
 
+#
+# Create a simple Nginx configuration file specifying the listen port
+# and SSL file locations
+#
 - name: Create nginx config file
   template:
     dest: /etc/cloudflare-beacon/default.conf
@@ -19,10 +38,21 @@
     mode: 0644
   notify: Restart Cloudflare Beacon Systemd Unit
 
+#
+# This is a block of tasks that copy the x509 files to the destination
+# or creates them and retrieves them for later use if they don't exist
+# Finally they report the sha256 fingerprint of the cert.  This is how Cloudflare Warp
+# recognizes and distinguishes between known networks
+#
 - name: Place or Create x509 Certificate
   import_tasks:
     file: x509_cert.yaml
-              
+
+#
+# This task creates the systemd container unit spec that initiates the
+# Nginx server on boot and configures the container to import the required files
+# and to open the configured TCP port for queries
+#
 - name: Create beacon systemd container file
   template:
     dest: /etc/containers/systemd/cloudflare-beacon.container

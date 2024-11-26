@@ -1,14 +1,34 @@
+#
+# The cloudflare warp network beacon requres an SSL certificate with
+# a alt name DNS.  I don't know why, but it does. That and the fingerprint from
+# the cert are all that's necessary for Warp to recognize the net.
+#
+# This task list tries copying local files to the destination. If it fails
+# because they local files don't exist, then it creates them on the remote machine
+# and pulls the files back.
+#
+# TODO: make the files be identified by the FQDN of the destination host
+#
+
+
 - name: Place or Create SSL files
   block:
-    - name: Copy the SSL files
+
+    #
+    # The first step is to try to copy the files
+    #    
+    - name: Copy the SSL files(s)
       copy:
-        dest: "/etc/cloudflare-beacon/beacon.{{ item }}"
-        src: "files/cloudflare/beacon.{{ item }}"
+        dest: "/etc/cloudflare-beacon/beacon.crt"
+        src: "files/cloudflare/{{ ansible_fqdn }}.crt"
         owner: root
         group: root
         mode: 0644
-      loop: [ 'key', 'pem' ]
+
   rescue:
+    #
+    # This sequence generates a self-signed cert and retrieves the cert and key
+    #
     - name: Create files and get them back
       when: ""
       block:
@@ -16,37 +36,44 @@
           community.crypto.openssl_privatekey:
             path: /etc/cloudflare-beacon/beacon.key
 
+        # There's no need to store the CSR, so don't
         - name: Create certificate signing request (CSR) for self-signed certificate
-          community.crypto.openssl_csr:
-            path: /etc/cloudflare-beacon/beacon.csr
+          community.crypto.openssl_csr_pipe:
             privatekey_path: /etc/cloudflare-beacon/beacon.key
             common_name: "{{ ansible_fqdn }}"
             organization_name: Cloudflare Beacon
             subject_alt_name:
               - "DNS:{{ ansible_fqdn }}"
+          register: csr
       
         - name: Create self-signed certificate from CSR
           community.crypto.x509_certificate:
             path: /etc/cloudflare-beacon/beacon.pem
             privatekey_path: /etc/cloudflare-beacon/beacon.key
-            csr_path: /etc/cloudflare-beacon/beacon.csr
+            csr_content: "{{ csr.csr }}"
             provider: selfsigned
 
+        - name: Combine the Key and Cert file
+          shell:
+            chdir: /etc/cloudflare-beacon
+            cmd: "cat beacon.key beacon.pem > beacon.crt ; rm *.{key,pem}"
+            creates: beacon.crt
+            
         - name: Retrieve key and crt file for later use
           block: 
             - name: Fetch Key and Pem Files
               fetch:
-                src: "/etc/cloudflare-beacon/beacon.{{ item }}"
-                dest: "files/cloudflare/"
+                src: "/etc/cloudflare-beacon/beacon.crt"
+                dest: "files/cloudflare/{{ ansible_fqdn }}.crt"
                 flat: true
-              loop: [ 'key', 'pem']
-  notify: Restart Cloudflare Beacon Systemd Unit
+
+      notify: Restart Cloudflare Beacon Systemd Unit
 
 - name: Examine the certificate
   community.crypto.x509_certificate_info:
-    path: /etc/cloudflare-beacon/beacon.pem
-  register: beacon_cert
+    path: /etc/cloudflare-beacon/beacon.crt
+  register: cert
 
 - name: Report the certificate fingerprint
   debug:
-    msg: "Fingerprint: {{ beacon_cert.fingerprints.sha256 }}"
+    msg: "Fingerprint: {{ cert.fingerprints.sha256 }}"
