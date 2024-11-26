@@ -31,8 +31,8 @@
 #
 - name: Create nginx config file
   template:
-    dest: /etc/cloudflare-beacon/default.conf
-    src: default.conf.j2
+    dest: /etc/cloudflare-beacon/beacon.conf
+    src: beacon.conf.j2
     owner: root
     group: root
     mode: 0644
