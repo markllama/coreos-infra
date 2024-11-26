@@ -1,0 +1,52 @@
+- name: Place or Create SSL files
+  block:
+    - name: Copy the SSL files
+      copy:
+        dest: "/etc/cloudflare-beacon/beacon.{{ item }}"
+        src: "files/cloudflare/beacon.{{ item }}"
+        owner: root
+        group: root
+        mode: 0644
+      loop: [ 'key', 'pem' ]
+  rescue:
+    - name: Create files and get them back
+      when: ""
+      block:
+        - name: Create private key (RSA, 4096 bits)
+          community.crypto.openssl_privatekey:
+            path: /etc/cloudflare-beacon/beacon.key
+
+        - name: Create certificate signing request (CSR) for self-signed certificate
+          community.crypto.openssl_csr:
+            path: /etc/cloudflare-beacon/beacon.csr
+            privatekey_path: /etc/cloudflare-beacon/beacon.key
+            common_name: "{{ ansible_fqdn }}"
+            organization_name: Cloudflare Beacon
+            subject_alt_name:
+              - "DNS:{{ ansible_fqdn }}"
+      
+        - name: Create self-signed certificate from CSR
+          community.crypto.x509_certificate:
+            path: /etc/cloudflare-beacon/beacon.pem
+            privatekey_path: /etc/cloudflare-beacon/beacon.key
+            csr_path: /etc/cloudflare-beacon/beacon.csr
+            provider: selfsigned
+
+        - name: Retrieve key and crt file for later use
+          block: 
+            - name: Fetch Key and Pem Files
+              fetch:
+                src: "/etc/cloudflare-beacon/beacon.{{ item }}"
+                dest: "files/cloudflare/"
+                flat: true
+              loop: [ 'key', 'pem']
+  notify: Restart Cloudflare Beacon Systemd Unit
+
+- name: Examine the certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/cloudflare-beacon/beacon.pem
+  register: beacon_cert
+
+- name: Report the certificate fingerprint
+  debug:
+    msg: "Fingerprint: {{ beacon_cert.fingerprints.sha256 }}"
