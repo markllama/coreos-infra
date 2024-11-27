@@ -73,8 +73,55 @@ the container on startup using *volume* statements during the container invocati
 
 # Systemd and Quadlets
 
-Recently `systemd` was extended to include [quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html "Podman Quadlets").
-These are systems services that run as
-software containers. Systemd manages retrieving and updating the container images
-and running and controlling the container instances.
+Recently a suite of projects converged to make it possible to run
+containers as systemd services. The working interface for this purpose
+is Podman [quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+"Podman Quadlets"). Systemd manages retrieving and updating the container
+images and running and controlling the container instances. 
+
+The beacon web server is deployed as an Nginx web server in a
+container managed as a systemd service. The deployment process is to
+place the needed configuration files, placing the container service
+spec and notifying systemd to enable and run it.
+
+# X509 Certificates and Fingerprint
+
+The last part of the beacon configuration is the x509 certificate with
+CN and Alt DNS fields defined. Cloudflare requires that the beacon
+answer queries for HTTPS and that the certificate fingerprint match
+the value configured on the known network. For this Nginx server the
+x509 certificate and the RSA private key used to create it are
+combined into a single file with the two ASCII armored blocks.
+
+If this file exists when the playbook begins, it is copied to the
+target host and deployment proceeds. If the file does not yet exist,
+the role will generate the key and x509 certificate, combine them into
+the single file in place and then pull back that file and store it
+locally for future use.
+
+This file is the critical sensitive value for identifying the Known
+Network. It should not be saved in a public repository without
+additional file-level encryption.
+
+The fingerprint used by Cloudflare is an sha256 hash of the
+certificate. The fingerprint can be generated from the file like this:
+
+    # Write and extract the fingerprint in a form suitable for
+    # Cloudflare Known Network specification
+    cat <cert file> | \
+	  openssl x509 -fingerprint -sha256 | \
+	  grep Fingerprint | \
+	  cut -d= -f2 | \
+	  tr -d : | \
+	  tr '[:upper:]' '[:lower:]'
+
+This command writes the cert contents including the fingerprint, then
+isolates the fingerprint string, removes colons (:) and converts the
+string to lowercase.
+
+The fingerprint, along with the IP address and TCP port for the web
+server are provided to define the Known Network. Then the
+administrator can define a profile that is applied when Warp detects
+this network.
+
 
