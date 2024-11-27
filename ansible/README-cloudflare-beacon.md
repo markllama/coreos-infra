@@ -1,6 +1,6 @@
 # Cloudflare Beacon
 
-Cloudflare Warp Zero Trust (ZT) provides a form of VPN to Cloudflare's secure network.
+Cloudflare [ZeroTrust](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/ "Warp Zero Trust") (ZT) provides a form of VPN to Cloudflare's secure network.
 The Zero Trust client establishes an encrypted tunnel uplink. It routes traffic from
 the user's computer through the tunnel so that it is encapsulated and encrypted when
 it moves onto the local, potentially malicious or insecure network.
