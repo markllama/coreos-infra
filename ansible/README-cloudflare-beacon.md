@@ -6,7 +6,16 @@ The Zero Trust client establishes an encrypted tunnel uplink. It routes traffic 
 the user's computer through the tunnel so that it is encapsulated and encrypted when
 it moves onto the local, potentially malicious or insecure network.
 
-# Managed Networks
+## Playbook and Role
+
+The cloudflare beacon is deployed by the
+[cloudflare-beacon-pb.yaml](./cloudflare-beacon-pb.yaml) playbook file:
+
+    ansible-playbook [--check] ./cloudflare-beacon-pb.yaml
+	
+The hosts are defined in `inventory.yaml` in the *cloudflare_beacons* group.
+
+## Managed Networks
 
 When the ZT client connects to the Cloudflare mesh, it checks if it is on one of a list of 
 [Managed Networks](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/configure-warp/managed-networks/ "Managed Networks"). 
@@ -21,7 +30,7 @@ set of *beacons*.  A beacon is a web server at a well known IP address that is n
 accessible except on the managed network.  The web server answers HTTPS queries and
 encrypts the traffic with a server key that uniquely identifies this network.
 
-# CoreOS - A Container Optimized OS
+## CoreOS - A Container Optimized OS
 
 [Fedora CoreOS](https://fedoraproject.org/coreos/ "Fedora CoreOS") is a linux distribution 
 designed to run software containers. It is based on Fedora, but using *rpm-ostree* to create
@@ -33,7 +42,7 @@ applications it hosts are almost entirely decoupled and can safely be updated en
 independently. CoreOS updates on the stable stream are released every two weeks. The service
 container images can be checked and updated as new images are released.
 
-# Nginx in a Container Instance
+## Nginx in a Container Instance
 
 The beacon can be implemented with any web server that can respond with SSL. There are
 a number of sources for Apache containers, but the simplest image that is actively maintained
@@ -71,7 +80,7 @@ not be stored in Github without being encrypted or protected.
 These files are placed on the host in `/etc/cloudflare-beacon` and are mounted into
 the container on startup using *volume* statements during the container invocation.
 
-# Systemd and Quadlets
+## Systemd and Quadlets
 
 Recently a suite of projects converged to make it possible to run
 containers as systemd services. The working interface for this purpose
@@ -84,7 +93,7 @@ container managed as a systemd service. The deployment process is to
 place the needed configuration files, placing the container service
 spec and notifying systemd to enable and run it.
 
-# X509 Certificates and Fingerprint
+## X509 Certificates and Fingerprint
 
 The last part of the beacon configuration is the x509 certificate with
 CN and Alt DNS fields defined. Cloudflare requires that the beacon
@@ -123,5 +132,3 @@ The fingerprint, along with the IP address and TCP port for the web
 server are provided to define the Known Network. Then the
 administrator can define a profile that is applied when Warp detects
 this network.
-
-
