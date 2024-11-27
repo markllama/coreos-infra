@@ -21,17 +21,14 @@ set of *beacons*.  A beacon is a web server at a well known IP address that is n
 accessible except on the managed network.  The web server answers HTTPS queries and
 encrypts the traffic with a server key that uniquely identifies this network.
 
-# CoreOS and Quadlets
+# CoreOS - A Container Optimized OS
 
 [Fedora CoreOS](https://fedoraproject.org/coreos/ "Fedora CoreOS") is a linux distribution 
 designed to run software containers. It is based on Fedora, but using *rpm-ostree* to create
 an immutable OS.  Rather than installing user software into the OS using traditional packages,
-application software and services are run in software containers using *podman*. Recently
-`systemd` was extended to include [quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html "Podman Quadlets"). These are systems services that run as
-software containers. Systemd manages retrieving and updating the container images
-and running and controlling the container instances.
+application software and services are run in software containers using *podman*.
 
-The immutable OS and container instances as systemd services means that the OS and the
+The immutable OS and container instances means that the OS and the
 applications it hosts are almost entirely decoupled and can safely be updated entirely
 independently. CoreOS updates on the stable stream are released every two weeks. The service
 container images can be checked and updated as new images are released.
@@ -76,4 +73,8 @@ the container on startup using *volume* statements during the container invocati
 
 # Systemd and Quadlets
 
+Recently `systemd` was extended to include [quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html "Podman Quadlets").
+These are systems services that run as
+software containers. Systemd manages retrieving and updating the container images
+and running and controlling the container instances.
 
