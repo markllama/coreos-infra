@@ -44,3 +44,8 @@ dnsservers:
 cloudflare_beacons:
   hosts:
     pi4-1:
+
+cloudflare_tunnels:
+  hosts:
+    pi4-1:
+      tunnel_name: home

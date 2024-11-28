@@ -1,0 +1,14 @@
+---
+#
+# The playbook creates a web server with an SSL cert that identifies
+# a known network for Cloudflare Warp clients
+#
+- name: Cloudflare Tunnel
+  hosts: cloudflare_tunnels
+  become: true
+
+  vars_files:
+    - cloudflare.yaml
+
+  roles:
+    - cloudflare-tunnel

@@ -9,3 +9,7 @@
     name: cloudflare-beacon
     state: restarted
 
+- name: Encrypt the retrieved file
+  local_action:
+    module: shell
+    cmd: "ansible-vault --vault-password-file secret files/cloudflare/{{ ansible_fqdn }}.crt"

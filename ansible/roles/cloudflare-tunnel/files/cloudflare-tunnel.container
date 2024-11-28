@@ -1,0 +1,11 @@
+[Unit]
+Description=Cloudflare Tunnel Daemon
+After=network-online.target
+
+[Container]
+EnvironmentFile=/etc/sysconfig/cloudflare-tunnel
+Image=docker.io/cloudflare/cloudflared
+Exec=tunnel --no-autoupdate run
+
+[Install]
+WantedBy=multi-user.target default.target

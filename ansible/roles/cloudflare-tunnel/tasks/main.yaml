@@ -1,0 +1,18 @@
+---
+- name: Create systemd container unit file
+  copy:
+    src: cloudflare-tunnel.container
+    dest: /etc/containers/systemd/cloudflare-tunnel.container
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload Cloudflare Tunnel Systemd Unit
+
+- name: Create sysconfig file
+  template:
+    src: cloudflare-tunnel.j2
+    dest: /etc/sysconfig/cloudflare-tunnel
+    owner: root
+    group: root
+    mode: 0600
+  notify: Restart Cloudflare Tunnel Systemd Unit

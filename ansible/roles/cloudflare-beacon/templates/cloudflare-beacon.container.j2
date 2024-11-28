@@ -4,7 +4,7 @@ After=network-online.target
 
 [Container]
 Image=docker.io/nginx:latest
-PublishPort={{ cf_beacon.port }}:443/tcp
+PublishPort={{ cloudflare.beacon_port }}:443/tcp
 
 Volume=/etc/cloudflare-beacon/beacon.conf:/etc/nginx/conf.d/beacon.conf:Z
 Volume=/etc/cloudflare-beacon/beacon.crt:/etc/nginx/beacon.crt:Z
