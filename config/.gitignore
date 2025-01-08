@@ -1,0 +1,2 @@
+# Ignore final ignition files.  Let make create them
+*.ign
