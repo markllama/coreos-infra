@@ -27,6 +27,18 @@ maintaining common network infrastructure services on CoreOS.
 
 CoreOS does not have an interactive installer, and it does not use Kickstart, the standard automated Fedora/Red Hat installer. Instead, CoreOS is installed onto the system storage using the `coreos-installer` program and a simplified system configuration schema known as `butane`. You can find details for deploying CoreOS in [Deploying CoreOS](./DEPLOY.md).
 
+## Network Infrastructure Services
+
+The first services you need on a new network are the ones no one
+notices because they define the network. If they're down no one says "oh, DNS is down" they say "The Internet is down". If DHCP is down, users can't get an IP address, and so, again "The Internet is down".
+
+* DNS - Map IP Addresses to hostnames and services
+* NTP - Provide trusted time-sync for devices
+* DHCP - Map hardware to IP addresses - Provide boot/install information
+* PXE (TFTP/HTTP) - provide boot/install payload
+* Monitoring - Observe and report activity
+* Access Management (RADIUS/TACACS,FreeIPA) - Identify users and resource access
+
 ## Service Installation
 
 * DNS - CoreDNS
