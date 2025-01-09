@@ -42,16 +42,17 @@ make changes to the running OS. Whole toolsets exist just to ensure
 the integrity of the OS over time.
 
 CoreOS uses a filesystem (or meta-filesystem?) called
-[rpm-ostree](https://coreos.github.io/rpm-ostree/). Rpm-ostree is a variant of
-[ostree](https://ostreedev.github.io/ostree/)that combines the (RPM)[rpm.org] package
-management system with a transactional filesystem. The result is an
-operating system that both prevents ad-hoc (or malicious) updates and
-provides atomic roll-back in the event that an update introduces a
-problem. When an update is applied, rpm-ostree produces a new commit in
-the filesystem, but the changed files are invisible to the currently
-running OS. The system must be rebooted using the new commit to run
-the updated system. If the new OS fails to boot or introduces problems
-it is possible to rollback and reboot with a single command.
+[rpm-ostree](https://coreos.github.io/rpm-ostree/). Rpm-ostree is a
+variant of [ostree](https://ostreedev.github.io/ostree/)that combines
+the (RPM)[rpm.org] package management system with a transactional
+filesystem. The result is an operating system that both prevents
+ad-hoc (or malicious) updates and provides atomic roll-back in the
+event that an update introduces a problem. When an update is applied,
+rpm-ostree produces a new commit in the filesystem, but the changed
+files are invisible to the currently running OS. The system must be
+rebooted using the new commit to run the updated system. If the new OS
+fails to boot or introduces problems it is possible to rollback and
+reboot with a single command.
 
 That last point will raise the eyebrows of people for whom uptime is
 the ultimate metric of stability but modern application architectures
