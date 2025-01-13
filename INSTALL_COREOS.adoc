@@ -140,8 +140,8 @@ defined in the passwords section.
 
     passwords:
       users:
-        - name: core:
-	  ssh_authorized_keys: |
+        - name: core
+          ssh_authorized_keys: |
             ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7GOHs9enyGZ7tTSh8E8G5mE+B9gyVVnz41hRyxbbN Infrastructure Ansible Key
 
 The core user already exists so the user will be created as
