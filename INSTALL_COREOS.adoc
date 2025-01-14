@@ -1,6 +1,6 @@
 = CoreOS From The Ground Up
-In
-https://electron-swamp.blogspot.com/2025/01/the-case-for-coreos-network.html[the
+
+In https://electron-swamp.blogspot.com/2025/01/the-case-for-coreos-network.html[the
 first post] in this series I laid out a set of arguments to support
 the use of https://fedoraproject.org/coreos[Fedora CoreOS] to host
 network services for small and medium local networks. That was the
@@ -20,15 +20,13 @@ Red Hat Kickstart) to define and apply all the changes an admin
 would want for system initialization. These include complex disk
 and network configurations, package selection, user definitions.
 
-The other extreme is an OS
-that is provided as a binary image and is merely copied to the
-destination. This is the most common method for distributions
-made for small ARM machines like Raspberry Pi. To customize one
-of these you have to write to the media and then mount the
-image on a running machine (like my laptop) and make the needed
-changes before the first boot. I often do this to enable the
-UART for a serial console and to place an SSH private key for
-the default user.
+The other extreme is an OS that is provided as a binary image and is
+merely copied to the destination. This is the most common method for
+distributions made for small ARM machines like Raspberry Pi. To
+customize one of these you have to write to the media and then mount
+the image on a running machine (like my laptop) and make the needed
+changes before the first boot. I often do this to enable the UART for
+a serial console and to place an SSH private key for the default user.
 
 == The CoreOS Installer
 
@@ -102,59 +100,36 @@ that there are no errors in the white-space delimited YAML form.
 
 == Make It Your Own
 
-The Butane specification only has two required fields to start the YAML file:
+CoreOS is by design a minimal distribution and the initial
+configuration is comparably sparse. You can create lots of users and
+place arbitrary files and apply complex controls to the storage
+configuration and placement, but on a simple system there's really no need.
 
-    variant: fcos
-    version: 1.6.0
+[source, yaml]
+----
+---
+# Indicate the spec and version for the parser
+variant: fcos
+version: 1.6.0
 
-This indicates thats the target system is Fedora CoreOS and that the
-Butane schema version is 1.6.0. The following fields must all
-conform to that schema, but all of the fields are
-optional.
+# set the hostname of the system
+storage:
+  files:
+    - path: /etc/hostname
+      contents:
+        inline: |
+          coreos-01.example.com
 
-Who Are You? Who Who? Who Who?
+# set a pub key for the core user
+passwd:
+  users:
+    - name: core
+      # depends on butane --files-dir argument
+      ssh_authorized_keys_local:
+        - core-ed25519.pub
+----
 
-A bare CoreOS image will boot and initialize any NICs it
-detects. Without any configuration provided each NIC that
-detects link will broadcast a DHCP request. The system will
-configure the NICs according to the DHCP response that they
-receive. If the NIC's MAC address has a lease reservation
-defined, the DHCP server will provide a stable known IP
-address in the DHCP response. Finally the system will start
-an SSH daemon attached to the active interfaces and begin
-accepting inbound connection requests.
 
-The basic image only has two users defined: root and core
-
-Neither user has a password defined or a public key set to allow a user
-to log in. By convention the root user never does.
-The core user is a member of the sudoers group and so can
-escalate privileges as needed... once the user is logged in.
-
-The Butane spec includes a section for defining new users
-including providing an SSH public key. It is possible also
-to provide a password, but that places sensitive
-information (the password hash) into the butane file and so
-is discouraged. New users, and user customisations are
-defined in the passwords section.
-
-    passwords:
-      users:
-        - name: core
-          ssh_authorized_keys: |
-            ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7GOHs9enyGZ7tTSh8E8G5mE+B9gyVVnz41hRyxbbN Infrastructure Ansible Key
-
-The core user already exists so the user will be created as
-default. This section just tells the Ignition system to add this
-public key to the core user's authorized_keys file. After first boot,
-a user holding the private key will be able to log into the new system
-as the coreuser.
-
-== Where Am I?
-
-The only other configuration I like to make is to tell the system it's
-own name. The system name is defined in /etc/hostname so I'll add a
-section to create this file and insert the text needed.
 
 == Installer Controls
 
