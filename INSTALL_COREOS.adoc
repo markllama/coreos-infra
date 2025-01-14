@@ -28,44 +28,6 @@ the image on a running machine (like my laptop) and make the needed
 changes before the first boot. I often do this to enable the UART for
 a serial console and to place an SSH private key for the default user.
 
-== The CoreOS Installer
-
-CoreOS falls somewhere in the middle. A new CoreOS instance is written to the disk using
-a single CLI command: `https://github.com/coreos/coreos-installer[coreos-installer]`.
-
-The installer can be run from a bootable live-image of CoreOS or it
-can run on a separate machine with the storage temporarily
-attached. The installer is available on Fedora Linux in the RPM of the
-same name. 
-	
-In it's simplest form the installer takes only a single argument: the
-location to write the image data.
-
-[source, bash]
-----
-sudo coreos-installer install /dev/sdb
-----
-
-This command will pull the default stream (stable) from the default
-location (the Fedora CoreOS download repository) and write it onto the
-indicated block device. In this example it is an SD card that was
-previously inserted into a USB port. The installer does not make any
-customisations to the image.
-
-**NOTE:** *Be sure to unmount any auto-mounted existing filesystems from the device before overwriting.*
-
-**WARNING:** *Be sure you're writing to the correct device. Overwriting your OS is easy and painful.*
-
-The install command can take a number of arguments to select the image
-stream, the image source and to control the target platform and
-architecture. We'll use these only as needed to vary from the
-defaults. We will use two arguments that indicate where to find a
-configuration file that will be laid into the image and used on first
-boot to complete the customization. We'll use slightly different
-arguments for the two sample targets based on the installation method
-and the characteristics of the target devices. Before we can run the
-installer we need to define the customisations and generate the
-configuration files for the target systems.
 
 == Something About Fire Metaphors
 
@@ -129,6 +91,44 @@ passwd:
         - core-ed25519.pub
 ----
 
+== The CoreOS Installer
+
+CoreOS falls somewhere in the middle. A new CoreOS instance is written to the disk using
+a single CLI command: `https://github.com/coreos/coreos-installer[coreos-installer]`.
+
+The installer can be run from a bootable live-image of CoreOS or it
+can run on a separate machine with the storage temporarily
+attached. The installer is available on Fedora Linux in the RPM of the
+same name. 
+	
+In it's simplest form the installer takes only a single argument: the
+location to write the image data.
+
+[source, bash]
+----
+sudo coreos-installer install /dev/sdb
+----
+
+This command will pull the default stream (stable) from the default
+location (the Fedora CoreOS download repository) and write it onto the
+indicated block device. In this example it is an SD card that was
+previously inserted into a USB port. The installer does not make any
+customisations to the image.
+
+**NOTE:** *Be sure to unmount any auto-mounted existing filesystems from the device before overwriting.*
+
+**WARNING:** *Be sure you're writing to the correct device. Overwriting your OS is easy and painful.*
+
+The install command can take a number of arguments to select the image
+stream, the image source and to control the target platform and
+architecture. We'll use these only as needed to vary from the
+defaults. We will use two arguments that indicate where to find a
+configuration file that will be laid into the image and used on first
+boot to complete the customization. We'll use slightly different
+arguments for the two sample targets based on the installation method
+and the characteristics of the target devices. Before we can run the
+installer we need to define the customisations and generate the
+configuration files for the target systems.
 
 
 == Installer Controls
