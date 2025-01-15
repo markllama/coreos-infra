@@ -28,8 +28,7 @@ the image on a running machine (like my laptop) and make the needed
 changes before the first boot. I often do this to enable the UART for
 a serial console and to place an SSH private key for the default user.
 
-
-== Something About Fire Metaphors
+=== Configuration
 
 The minimalist nature of CoreOS means there aren't a lot of knobs that
 need setting to get a basic running system. The CLI arguments for
@@ -37,6 +36,8 @@ coreos-installer define what image gets placed and where, but they
 don't make any changes to the image itself. To customize the installed
 system we need to define the elements we want configured and what
 values we want them to have.
+
+==== Config Formats
 
 CoreOS actually uses two semantically identical configuration
 specifications. Users provide their configuration using the
@@ -60,12 +61,16 @@ corrected before installation. This doesn't do anything to make sure
 that the configuration values are correct, but at least it insures
 that there are no errors in the white-space delimited YAML form.
 
-== Make It Your Own
+==== Make It Your Own
 
 CoreOS is by design a minimal distribution and the initial
 configuration is comparably sparse. You can create lots of users and
 place arbitrary files and apply complex controls to the storage
 configuration and placement, but on a simple system there's really no need.
+
+The only customizations needed to start are those that identify the
+system and provide the initial access for further configuration. The
+file below is near the the simplest system configuration you can have.
 
 [source, yaml]
 ----
@@ -91,15 +96,43 @@ passwd:
         - core-ed25519.pub
 ----
 
+This configuration is applied during first-boot from the `ignition`
+service on the `initrd`, a ram disk stage 1 boot system.
+
+This configuration does not include either the storage layout or network
+specs for the system. Complex storage configuration is part of the
+spec, but for small system's it's not often useful. The network
+configuration can be managed by DHCP or provided at the CLI
+installation command.
+
+=== Light It Up: Butane to Ignition
+
+As noted in <<config_formats>> the system configuration is defined
+using the Butane spec, but must be provided to the installer and
+booting system in the Ignition format. The `butane` command validates
+the configuration and transforms it for the installer.
+
+The https://coreos.github.io/butane/getting-started[`butane` binary]
+is available as an RPM on Fedora based distributions, but it is also
+available as a software container. The butane transformer is a pure
+pipeline. That is, it takes a stream of input on `stdin`, and some
+arguments for how to transform the stream and writes the transformed
+data to `stdout`. For simplicity the examples here assume that
+`butane` is either installed or that the container invokation has been
+defined as a shell alias.
+
+
+
+
 == The CoreOS Installer
 
-CoreOS falls somewhere in the middle. A new CoreOS instance is written to the disk using
-a single CLI command: `https://github.com/coreos/coreos-installer[coreos-installer]`.
-
-The installer can be run from a bootable live-image of CoreOS or it
-can run on a separate machine with the storage temporarily
-attached. The installer is available on Fedora Linux in the RPM of the
-same name. 
+CoreOS falls somewhere in the middle between interactive and simple
+image copy installers.  A new CoreOS instance is written to the disk
+using a single CLI command:
+`https://github.com/coreos/coreos-installer[coreos-installer]`. The
+installer can be run from a bootable live-image of CoreOS or it can
+run on a separate machine with the storage temporarily attached. The
+installer is available on Fedora Linux in the RPM of the same name.
 	
 In it's simplest form the installer takes only a single argument: the
 location to write the image data.
@@ -126,14 +159,14 @@ defaults. We will use two arguments that indicate where to find a
 configuration file that will be laid into the image and used on first
 boot to complete the customization. We'll use slightly different
 arguments for the two sample targets based on the installation method
-and the characteristics of the target devices. Before we can run the
-installer we need to define the customisations and generate the
-configuration files for the target systems.
-
+and the characteristics of the target devices.
 
 == Installer Controls
 
 There are a number of CLI arguments for the installer that are used to affect the
 image results. These are used to select custom image stream
-or locations. In this demonstration we're only going to use two, both related to
+or locations. In this demonstration we're only going to use two, both
+related to the location of the Ignition configuration file.
+
+
  
