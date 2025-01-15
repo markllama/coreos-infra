@@ -122,8 +122,17 @@ data to `stdout`. For simplicity the examples here assume that
 `butane` is either installed or that the container invokation has been
 defined as a shell alias.
 
+The config file above can be processed with only one argument. It
+tells `butane` where to look for the SSH public key. In this case they
+keys are stored in the user's home directory in the `.ssh` subdirectory.
 
+[source, bash]
+----
+butane --files-dir ~/.ssh < coreos-config.bu > coreos-config.ign
+----
 
+Assuming the input file is valid, this command will generate the
+matching ignition file, ready for use by the CoreOS installer program.
 
 == The CoreOS Installer
 
