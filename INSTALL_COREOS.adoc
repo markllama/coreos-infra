@@ -73,6 +73,7 @@ system and provide the initial access for further configuration. The
 file below is near the the simplest system configuration you can have.
 
 [source, yaml]
+.`coreos-config.bu`
 ----
 ---
 # Indicate the spec and version for the parser
