@@ -107,7 +107,7 @@ installation command.
 
 === Light It Up: Butane to Ignition
 
-As noted in <<config_formats>> the system configuration is defined
+As noted in <<config-formats>> the system configuration is defined
 using the Butane spec, but must be provided to the installer and
 booting system in the Ignition format. The `butane` command validates
 the configuration and transforms it for the installer.
