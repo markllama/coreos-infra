@@ -1,0 +1,105 @@
+= Deploying CoreOS
+
+There are already a number of good resources for deploying CoreOS to
+various systems. See <<references>>. This document focuses on the
+particulars of configuring and deploying CoreOS as a base for small
+and medium network infrastructure services.
+
+== The Principle of Least Config
+
+In keeping with the minimalist philosophy of CoreOS, the configuration
+will apply only those settings necessary to boot the system and
+provide remote access and configuration management. The first two are fairly
+trivial, but the last involves a bit of system gymnastics.
+
+The CoreOS configuration is applied at first boot and is provided to
+the installer when writing the boot media to storage.
+
+[source, yaml]
+.`coreos-infra.bu`
+----
+---
+# Specify the target and schema version
+# <<butane-preamble>>
+variant: fcos
+version: 1.6.0
+
+# Provide an ssh public key for the core user
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys_local:
+        - infra-ansible-ed25519.pub
+
+storage:
+  files:
+
+    # Define the system hostname
+    - path: /etc/hostname
+      contents:
+        inline: |
+          infra-01.example.com
+
+    # A script to overlay the ansible packages and clean up
+    - path: /usr/local/bin/install-overlay-packages
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+
+          if [ -x /usr/bin/ansible ] ; then
+            rm /usr/local/bin/install-overlay-packages
+            systemctl disable install-overlay-packages
+            rm /etc/systemd/system/install-overlay-packages.service
+          else
+            rpm-ostree install --assumeyes ansible
+            systemctl reboot
+          fi
+
+systemd:
+  units:
+
+    # Define a one-time service to run at first boot
+    - name: install-overlay-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install Overlay Packages
+        After=systemd-resolved.service
+        Before=zincati.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/install-overlay-packages
+
+        [Install]
+        WantedBy=multi-user.target
+----
+
+=== Butane Preamble
+
+
+=== Core User
+
+=== Hostname
+
+=== Package Overlay
+
+==== Overlay Script
+
+==== One-time First Boot Service
+
+= References
+
+* https://coreos.github.io/butane/[Butane]
+
+* https://coreos.github.com/ignition[Ignition]
+
+* https://docs.fedoraproject.org/en-US/fedora-coreos/bare-metal/[CoreOS on Bare Metal]
+
+* https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/[CoreOS on Raspberry Pi 4]
+

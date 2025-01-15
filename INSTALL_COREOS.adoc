@@ -178,5 +178,11 @@ image results. These are used to select custom image stream
 or locations. In this demonstration we're only going to use two, both
 related to the location of the Ignition configuration file.
 
+=== Install to SD Card
+
+
+
+=== Install to Local Storage 
+
 
  
