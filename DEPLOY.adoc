@@ -250,12 +250,11 @@ butane --pretty --files-dir ~/.ssh < coreos-infra.bu > coreos-infra.ign
 This call only takes two parameters:
 
 * `--pretty` +
-  This just pretty prints the JSON output. It's entirely cosmetic and +
-  unnecessary.
+  This just pretty prints the JSON output. It's entirely cosmetic and unnecessary.
 
 * `--files-dir ~/.ssh` +
-  This tells `butane` where to find any external files, specifically, +
-  in this case, the location of the public key file for the `core` +
+  This tells `butane` where to find any external files, specifically,
+  in this case, the location of the public key file for the `core`
   user.
 
 
