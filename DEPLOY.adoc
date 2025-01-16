@@ -49,7 +49,6 @@ storage:
       contents:
         inline: |
           #!/bin/bash
-
           if [ -x /usr/bin/ansible ] ; then
             rm /usr/local/bin/install-overlay-packages
             systemctl disable install-overlay-packages
@@ -122,11 +121,113 @@ file is provided on the `butane` command line using the `--files-dir` argument.
 
 === 3 - Hostname
 
-=== 4 - Package Overlay
+When you log into a system it's convenient to see the hostname in the
+CLI prompts. It's also good for reviewing logs. The hostname for
+Fedora is set using the `/etc/hostname` file.
+
+[source, yaml]
+----
+storage:
+  files:
+
+    - path: /etc/hostname
+      contents:
+        inline: |
+          infra-01.example.com
+----
+
+By convention this file contains the fully-qualified domain name of
+the host, and the hostname is the first element of the FQDN.
+
+=== 4 - Package Overlay - Install Ansible
+
+This is the first place where CoreOS is properly customized. The goal
+is to automate management of the host and service using *Ansible*. The
+Fedora Project is agonistic to the user selection of configuration
+management software, so no CM software is installed by default. These
+two sections create the parts needed to overlay Ansible on first boot
+and then reboot so that the Ansible package contents are available.
 
 ==== 4a - Overlay Script
 
+The first part of this first-boot process is a shell script placed so
+that it can be written and removed after use.
+
+[source, yaml]
+----
+    - path: /usr/local/bin/install-overlay-packages
+      user:
+        name: root
+      group:
+        name: root
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          if [ -x /usr/bin/ansible ] ; then
+            rm /usr/local/bin/install-overlay-packages
+            systemctl disable install-overlay-packages
+            rm /etc/systemd/system/install-overlay-packages.service
+          else
+            rpm-ostree install --assumeyes ansible
+            systemctl reboot
+          fi
+----
+
+The first half of this section defines the location, ownership and
+permissions of the file. The second half, under the `contents` key
+contains the body of this script.
+
+This script checks to see if the ansible binary is present and
+executable. If so, then the script removes itself and the systemd
+service unit file that triggers the script on boot. If `ansible` is
+not present, then the script overlays the Ansible RPM and then
+reboots.
+
+This means that the service and hence the script is executed twice. On
+first boot it runs the installlation command and reboots. The second
+time it detects that `ansible` is present and then disables and
+removes itself.
+
 ==== 4b - One-time First Boot Service
+
+The CoreOS specification allows the user to define and control the
+operation of `systemd` services. This final section defines a service
+that executes the script previously defined.
+
+[source, yaml]
+----
+systemd:
+  units:
+    - name: install-overlay-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install Overlay Packages
+        After=systemd-resolved.service
+        Before=zincati.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/install-overlay-packages
+
+        [Install]
+        WantedBy=multi-user.target
+----
+
+This unit file defines when the service should start and what it
+should do. The service will run after networking is enabled and the
+DNS `resolved` service is running, but before the `zincati` update
+service is started. It runs the script defined above but does not
+detach as it would for a daemon.
+
+As noted, this unit is deleted by the script when it runs the second
+time and detects the presence of the `ansible` binary.
+
+
+== The CoreOS Installer
+
+
 
 = References
 
@@ -137,4 +238,6 @@ file is provided on the `butane` command line using the `--files-dir` argument.
 * https://docs.fedoraproject.org/en-US/fedora-coreos/bare-metal/[CoreOS on Bare Metal]
 
 * https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/[CoreOS on Raspberry Pi 4]
+
+* https://www.redhat.com/en/blog/systemd-oneshot-service[systemd one-shot service]
 
