@@ -229,7 +229,7 @@ time and detects the presence of the `ansible` binary.
 
 
 
-= References
+== References
 
 * https://coreos.github.io/butane/[Butane]
 
