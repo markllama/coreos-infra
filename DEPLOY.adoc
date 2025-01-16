@@ -246,7 +246,7 @@ This call only takes two parameters:
   in this case, the location of the public key file for the `core`
   user.
 
-.coreos-infra.ign
+.`coreos-infra.ign`
 [source, json]
 ----
 {
