@@ -231,6 +231,8 @@ Ignition. The CoreOS installer places the Ignition file onto the new
 filesystem so that it is available on first boot so it must be
 provided at the installer CLI invocation.
 
+The `butane` binary can be installed on a Fedora system from an RPM, 
+
 [source, bash]
 ----
 butane --pretty --files-dir ~/.ssh < coreos-infra.bu > coreos-infra.ign
@@ -245,6 +247,8 @@ This call only takes two parameters:
   This tells `butane` where to find any external files, specifically,
   in this case, the location of the public key file for the `core`
   user.
+
+The result of running 
 
 .`coreos-infra.ign`
 [source, json]
