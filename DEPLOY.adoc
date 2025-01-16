@@ -217,12 +217,51 @@ systemd:
 
 This unit file defines when the service should start and what it
 should do. The service will run after networking is enabled and the
-DNS `resolved` service is running, but before the `zincati` update
+DNS `systemd-resolved` service is running, but before the `zincati` update
 service is started. It runs the script defined above but does not
 detach as it would for a daemon.
 
 As noted, this unit is deleted by the script when it runs the second
 time and detects the presence of the `ansible` binary.
+
+== Transforming the Butane System Spec
+
+As noted elsewhere, and for reasons I can't fathom Fedora CoreOS
+hasn't integrated a Butane parser into the existing Ignition module
+that applies the configuration to the booting system. Ignition was
+defined for the original CoreOS before it was bought and dropped in
+favor of Red Hat's Project Atomic (since renamed because CoreOS is a
+better brand). The only thing I can thing is that it does force a
+validation step during the transformation. The Butane spec does also
+include a section that can be used to compose an ignition file by
+merging blocks from several sources. This would be useful in an
+enterprise environment where many of the settings might be boilerplate.
+
+Regardless the next step is to transform the Butane file to
+Ignition. The CoreOS installer places the Ignition file onto the new
+filesystem so that it is available on first boot so it must be
+provided at the installer CLI invocation.
+
+[source, bash]
+----
+butane --pretty --files-dir ~/.ssh < coreos-infra.bu > coreos-infra.ign
+----
+
+This call only takes two parameters:
+
+* `--pretty`+
+  This just pretty prints the JSON output. It's entirely cosmetic and +
+  unnecessary.
+
+* `--files-dir ~/.ssh`+
+  This tells `butane` where to find any external files, specifically, +
+  in this case, the location of the public key file for the `core`+
+  user.
+
+
+  
+
+
 
 
 == The CoreOS Installer
