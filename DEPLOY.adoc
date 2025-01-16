@@ -19,12 +19,11 @@ the installer when writing the boot media to storage.
 .`coreos-infra.bu`
 ----
 ---
-# Specify the target and schema version
-# <<butane-preamble>>
+# 1 - Specify the target and schema version
 variant: fcos
 version: 1.6.0
 
-# Provide an ssh public key for the core user
+# 2 - Provide an ssh public key for the core user
 passwd:
   users:
     - name: core
@@ -34,13 +33,13 @@ passwd:
 storage:
   files:
 
-    # Define the system hostname
+    # 3 - Define the system hostname
     - path: /etc/hostname
       contents:
         inline: |
           infra-01.example.com
 
-    # A script to overlay the ansible packages and clean up
+    # 4a - A script to overlay the ansible packages and clean up
     - path: /usr/local/bin/install-overlay-packages
       user:
         name: root
@@ -63,7 +62,7 @@ storage:
 systemd:
   units:
 
-    # Define a one-time service to run at first boot
+    # 4b - Define a one-time service to run at first boot
     - name: install-overlay-packages.service
       enabled: true
       contents: |
@@ -80,18 +79,54 @@ systemd:
         WantedBy=multi-user.target
 ----
 
-=== Butane Preamble
+=== 1 - Butane Preamble
 
+The Butane configuration schema begins with two values that identify
+the target OS and the schema version itself.
 
-=== Core User
+[source, yaml]
+----
+variant: fcos
+version: 1.6.0
+----
 
-=== Hostname
+This indicates that the file targets Fedora CoreOS and the schema version is 1.6.0.
+This assists the parser in validating the remainder of the configuration against the
+indicated schema.
 
-=== Package Overlay
+=== 2 - Core User - SSH Public Key
 
-==== Overlay Script
+CoreOS deploys with two default users, `root` and `core`. The `root`
+user is not intended for direct login. Neither has a password by
+default. CoreOS is meant to be accessed by SSH on a network by the
+`core` user.
 
-==== One-time First Boot Service
+[source, yaml]
+----
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys_local:
+        - infra-ansible-ed25519.pub
+----
+
+The `core` user already exists so no additional parameters need to be
+provided. The user definition only specifies a public key file who's
+contents will be inserted into the `authorized_keys` file of that
+user.
+
+The `ssh_authorized_keys_local` option above consists of a list
+of filenames on the local machine that will be merged into the
+ignition file during transformation. The directory containing that
+file is provided on the `butane` command line using the `--files-dir` argument.
+
+=== 3 - Hostname
+
+=== 4 - Package Overlay
+
+==== 4a - Overlay Script
+
+==== 4b - One-time First Boot Service
 
 = References
 
