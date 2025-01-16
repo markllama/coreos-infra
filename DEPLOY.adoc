@@ -241,3 +241,6 @@ time and detects the presence of the `ansible` binary.
 
 * https://www.redhat.com/en/blog/systemd-oneshot-service[systemd one-shot service]
 
+* https://coreos.github.io/coreos-installer/[coreos-installer]
+
+
