@@ -226,18 +226,7 @@ time and detects the presence of the `ansible` binary.
 
 == Transforming the Butane System Spec
 
-As noted elsewhere, and for reasons I can't fathom Fedora CoreOS
-hasn't integrated a Butane parser into the existing Ignition module
-that applies the configuration to the booting system. Ignition was
-defined for the original CoreOS before it was bought and dropped in
-favor of Red Hat's Project Atomic (since renamed because CoreOS is a
-better brand). The only thing I can thing is that it does force a
-validation step during the transformation. The Butane spec does also
-include a section that can be used to compose an ignition file by
-merging blocks from several sources. This would be useful in an
-enterprise environment where many of the settings might be boilerplate.
-
-Regardless the next step is to transform the Butane file to
+The next step is to transform the Butane file to
 Ignition. The CoreOS installer places the Ignition file onto the new
 filesystem so that it is available on first boot so it must be
 provided at the installer CLI invocation.
@@ -257,8 +246,60 @@ This call only takes two parameters:
   in this case, the location of the public key file for the `core`
   user.
 
+.coreos-infra.ign
+[source, json]
+----
+{
+  "ignition": {
+    "version": "3.5.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7GOHs9enyGZ7tTSh8E8G5mE+B9gyVVnz41hRyxbbN Infrastructure Ansible Key"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/hostname",
+        "contents": {
+          "compression": "",
+          "source": "data:,infra-01.example.com%0A"
+        }
+      },
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/usr/local/bin/install-overlay-packages",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/3yPPQ7CMAyF95zCiDnkABwFMTipSyOcpMpLK3p71B8hMcBkyX7fZ/t8cj5m5xmDiT3dyL7ITahblzOiV6E7XakNkg1RTftYS2DdQjGjsaots1TlxY4cnvwQGCIsaJJCU+oieDX9Ca9macHtUHfUn/oLpM4xiBGFrPiYbEGr8llC1jIwJVkEdLzydVQVX0ozfTTvAAAA//9VmB3oBgEAAA=="
+        },
+        "mode": 493
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Install Overlay Packages\nAfter=systemd-resolved.service\nBefore=zincati.service\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/install-overlay-packages\n\n[Install]\nWantedBy=multi-user.target",
+        "enabled": true,
+        "name": "install-overlay-packages.service"
+      }
+    ]
+  }
+}
 
-  
+----
 
 
 
@@ -269,16 +310,29 @@ This call only takes two parameters:
 
 == References
 
-* https://coreos.github.io/butane/[Butane]
+* https://coreos.github.io/butane/[Butane] +
+  The Butane format usage and specifications.
 
-* https://coreos.github.com/ignition[Ignition]
+* https://coreos.github.com/ignition[Ignition] +
+  The Ignition spec for CoreOS configuration.
 
-* https://docs.fedoraproject.org/en-US/fedora-coreos/bare-metal/[CoreOS on Bare Metal]
+* https://docs.fedoraproject.org/en-US/fedora-coreos/bare-metal/[CoreOS
+  on Bare Metal] +
+  How to install CoreOS on Bare Metal. This includes variants for PXE,
+  and Live ISO installations.
 
-* https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/[CoreOS on Raspberry Pi 4]
+* https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/[CoreOS
+  on Raspberry Pi 4] +
+  How to install CoreOS on Raspberry Pi 4 or 5. This includes
+  instructions for installing EFI boot components that are not present
+  in the Pi boot firmware.
 
-* https://www.redhat.com/en/blog/systemd-oneshot-service[systemd one-shot service]
+* https://www.redhat.com/en/blog/systemd-oneshot-service[systemd
+  one-shot service] +
+  A blog post on the workings of Systemd one-shot service units.
 
-* https://coreos.github.io/coreos-installer/[coreos-installer]
+* https://coreos.github.io/coreos-installer/[coreos-installer] +
+  Usage and arguments for the CoreOS installer binary.  This can be
+  run from a live ISO or on a second host to write to the boot media.
 
 
