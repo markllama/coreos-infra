@@ -1,8 +1,8 @@
-= Deploying CoreOS
+= Configuring CoreOS
 
 There are already a number of good resources for deploying CoreOS to
-various systems. See <<references>>. This document focuses on the
-particulars of configuring and deploying CoreOS as a base for small
+various systems. See <<References>>. This document focuses on the
+particulars of configuring CoreOS as a base for small
 and medium network infrastructure services.
 
 == The Principle of Least Config
@@ -307,7 +307,6 @@ The result of running
     ]
   }
 }
-
 ----
 
 There are a couple of things to note in this transformation and

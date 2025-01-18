@@ -1,324 +1,102 @@
 = Deploying CoreOS
 
-There are already a number of good resources for deploying CoreOS to
-various systems. See <<references>>. This document focuses on the
-particulars of configuring and deploying CoreOS as a base for small
-and medium network infrastructure services.
+CoreOS installs by laying an image onto the boot disk and writing the
+configuration file so that it is available on first boot. The initrd
+for CoreOS contains the https://coreos.github.io/ignition/[Ignition]
+module. The initrd runs in memory and so it can manipulate the system
+disks if needed before they are mounted and control transfers to
+systemd to complete the boot process.
 
-== The Principle of Least Config
+The configuration created in
+https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[the
+previous post] defines just enough to provide access for the `core`
+user over the network by SSH, and layers the Ansible packages over the
+base. The remainder of the system customization will be defined and
+executed using Ansible.
 
-In keeping with the minimalist philosophy of CoreOS, the configuration
-will apply only those settings necessary to boot the system and
-provide remote access and configuration management. The first two are fairly
-trivial, but the last involves a bit of system gymnastics.
+In this post we'll walk through the installer process for two
+different light-weight target systems, and using two different
+installation methods.
 
-The CoreOS configuration is applied at first boot and is provided to
-the installer when writing the boot media to storage.
+* CoreOS on Intel - Live Boot USB
+* CoreOS on Raspberry Pi 4 - Write to Bootable SD Card
 
-[source, yaml]
-.`coreos-infra.bu`
-----
----
-# 1 - Specify the target and schema version
-variant: fcos
-version: 1.6.0
-
-# 2 - Provide an ssh public key for the core user
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys_local:
-        - infra-ansible-ed25519.pub
-
-storage:
-  files:
-
-    # 3 - Define the system hostname
-    - path: /etc/hostname
-      contents:
-        inline: |
-          infra-01.example.com
-
-    # 4a - A script to overlay the ansible packages and clean up
-    - path: /usr/local/bin/install-overlay-packages
-      user:
-        name: root
-      group:
-        name: root
-      mode: 0755
-      contents:
-        inline: |
-          #!/bin/bash
-          if [ -x /usr/bin/ansible ] ; then
-            rm /usr/local/bin/install-overlay-packages
-            systemctl disable install-overlay-packages
-            rm /etc/systemd/system/install-overlay-packages.service
-          else
-            rpm-ostree install --assumeyes ansible
-            systemctl reboot
-          fi
-
-systemd:
-  units:
-
-    # 4b - Define a one-time service to run at first boot
-    - name: install-overlay-packages.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Install Overlay Packages
-        After=systemd-resolved.service
-        Before=zincati.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/local/bin/install-overlay-packages
-
-        [Install]
-        WantedBy=multi-user.target
-----
-
-=== 1 - Butane Preamble
-
-The Butane configuration schema begins with two values that identify
-the target OS and the schema version itself.
-
-[source, yaml]
-----
-variant: fcos
-version: 1.6.0
-----
-
-This indicates that the file targets Fedora CoreOS and the schema version is 1.6.0.
-This assists the parser in validating the remainder of the configuration against the
-indicated schema.
-
-=== 2 - Core User - SSH Public Key
-
-CoreOS deploys with two default users, `root` and `core`. The `root`
-user is not intended for direct login. Neither has a password by
-default. CoreOS is meant to be accessed by SSH on a network by the
-`core` user.
-
-[source, yaml]
-----
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys_local:
-        - infra-ansible-ed25519.pub
-----
-
-The `core` user already exists so no additional parameters need to be
-provided. The user definition only specifies a public key file who's
-contents will be inserted into the `authorized_keys` file of that
-user.
-
-The `ssh_authorized_keys_local` option above consists of a list
-of filenames on the local machine that will be merged into the
-ignition file during transformation. The directory containing that
-file is provided on the `butane` command line using the `--files-dir` argument.
-
-=== 3 - Hostname
-
-When you log into a system it's convenient to see the hostname in the
-CLI prompts. It's also good for reviewing logs. The hostname for
-Fedora is set using the `/etc/hostname` file.
-
-[source, yaml]
-----
-storage:
-  files:
-
-    - path: /etc/hostname
-      contents:
-        inline: |
-          infra-01.example.com
-----
-
-By convention this file contains the fully-qualified domain name of
-the host, and the hostname is the first element of the FQDN.
-
-=== 4 - Package Overlay - Install Ansible
-
-This is the first place where CoreOS is properly customized. The goal
-is to automate management of the host and service using *Ansible*. The
-Fedora Project is agonistic to the user selection of configuration
-management software, so no CM software is installed by default. These
-two sections create the parts needed to overlay Ansible on first boot
-and then reboot so that the Ansible package contents are available.
-
-==== 4a - Overlay Script
-
-The first part of this first-boot process is a shell script placed so
-that it can be written and removed after use.
-
-[source, yaml]
-----
-    - path: /usr/local/bin/install-overlay-packages
-      user:
-        name: root
-      group:
-        name: root
-      mode: 0755
-      contents:
-        inline: |
-          #!/bin/bash
-          if [ -x /usr/bin/ansible ] ; then
-            rm /usr/local/bin/install-overlay-packages
-            systemctl disable install-overlay-packages
-            rm /etc/systemd/system/install-overlay-packages.service
-          else
-            rpm-ostree install --assumeyes ansible
-            systemctl reboot
-          fi
-----
-
-The first half of this section defines the location, ownership and
-permissions of the file. The second half, under the `contents` key
-contains the body of this script.
-
-This script checks to see if the ansible binary is present and
-executable. If so, then the script removes itself and the systemd
-service unit file that triggers the script on boot. If `ansible` is
-not present, then the script overlays the Ansible RPM and then
-reboots.
-
-This means that the service and hence the script is executed twice. On
-first boot it runs the installlation command and reboots. The second
-time it detects that `ansible` is present and then disables and
-removes itself.
-
-==== 4b - One-time First Boot Service
-
-The CoreOS specification allows the user to define and control the
-operation of `systemd` services. This final section defines a service
-that executes the script previously defined.
-
-[source, yaml]
-----
-systemd:
-  units:
-    - name: install-overlay-packages.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Install Overlay Packages
-        After=systemd-resolved.service
-        Before=zincati.service
-
-        [Service]
-        Type=oneshot
-        ExecStart=/usr/local/bin/install-overlay-packages
-
-        [Install]
-        WantedBy=multi-user.target
-----
-
-This unit file defines when the service should start and what it
-should do. The service will run after networking is enabled and the
-DNS `systemd-resolved` service is running, but before the `zincati` update
-service is started. It runs the script defined above but does not
-detach as it would for a daemon.
-
-As noted, this unit is deleted by the script when it runs the second
-time and detects the presence of the `ansible` binary.
-
-== Transforming the Butane System Spec
-
-The next step is to transform the Butane file to
-Ignition. The CoreOS installer places the Ignition file onto the new
-filesystem so that it is available on first boot so it must be
-provided at the installer CLI invocation.
-
-The `butane` binary can be installed on a Fedora system from an RPM, 
-
-[source, bash]
-----
-butane --pretty --files-dir ~/.ssh < coreos-infra.bu > coreos-infra.ign
-----
-
-This call only takes two parameters:
-
-* `--pretty` +
-  This just pretty prints the JSON output. It's entirely cosmetic and unnecessary.
-
-* `--files-dir ~/.ssh` +
-  This tells `butane` where to find any external files, specifically,
-  in this case, the location of the public key file for the `core`
-  user.
-
-The result of running 
-
-.`coreos-infra.ign`
-[source, json]
-----
-{
-  "ignition": {
-    "version": "3.5.0"
-  },
-  "passwd": {
-    "users": [
-      {
-        "name": "core",
-        "sshAuthorizedKeys": [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGl7GOHs9enyGZ7tTSh8E8G5mE+B9gyVVnz41hRyxbbN Infrastructure Ansible Key"
-        ]
-      }
-    ]
-  },
-  "storage": {
-    "files": [
-      {
-        "path": "/etc/hostname",
-        "contents": {
-          "compression": "",
-          "source": "data:,infra-01.example.com%0A"
-        }
-      },
-      {
-        "group": {
-          "name": "root"
-        },
-        "path": "/usr/local/bin/install-overlay-packages",
-        "user": {
-          "name": "root"
-        },
-        "contents": {
-          "compression": "gzip",
-          "source": "data:;base64,H4sIAAAAAAAC/3yPPQ7CMAyF95zCiDnkABwFMTipSyOcpMpLK3p71B8hMcBkyX7fZ/t8cj5m5xmDiT3dyL7ITahblzOiV6E7XakNkg1RTftYS2DdQjGjsaots1TlxY4cnvwQGCIsaJJCU+oieDX9Ca9macHtUHfUn/oLpM4xiBGFrPiYbEGr8llC1jIwJVkEdLzydVQVX0ozfTTvAAAA//9VmB3oBgEAAA=="
-        },
-        "mode": 493
-      }
-    ]
-  },
-  "systemd": {
-    "units": [
-      {
-        "contents": "[Unit]\nDescription=Install Overlay Packages\nAfter=systemd-resolved.service\nBefore=zincati.service\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/install-overlay-packages\n\n[Install]\nWantedBy=multi-user.target",
-        "enabled": true,
-        "name": "install-overlay-packages.service"
-      }
-    ]
-  }
-}
-
-----
-
-
-
+Both of these are also detailed in
+https://docs.fedoraproject.org/en-US/fedora-coreos/getting-started/[Getting
+Started with Fedora CoreOS] documentation. 
 
 == The CoreOS Installer
+
+CoreOS is installed using the
+https://coreos.github.io/coreos-installer/[coreos-installer]
+binary. On Fedora systems, the binary is available as an RPM. This
+program writes the stock image to the disk and writes an Ignition
+configuration file as well. Part of the installed image is an initial
+ram-disk or `initrd`. That ram-disk runs in memory leaving the disk
+free and unmounted, ready to apply the configuration, before mounting
+the new disk and transferring control to the new system.
+
+The `coreos-installer` has 5 sub-commands for managing the
+installation process, but the only one needed for these cases is the
+`install` command. The only required argument for `coreos-installer
+install` is the target disk to write to. The important optional
+arguments allow you to determine where to pull the image from, and
+where to get the Ignition file from. Both can either pull from a
+network or local disk.
+
+
+== Raspberry Pi 4 - Install to SD Card
+
+The method of installation used here is
+https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/#_edk2_combined_disk_mode_alternate_machine_disk_preparation[EDK2:Combined Disk Mode Alternate Machine Disk Preparation]
+This method first lays down the CoreOS disk image and then adds the
+EDK2 UEFI files needed for the Pi to boot. 
+
+The arguments to the installer can be provided in one or more YAML
+configuration files or on the command line. The configuration file
+consists of a set of YAML key/value pairs, matching the CLI arguments
+without the leading double-dash (--).
+
+Installing for a Raspberry Pi means writing to an SD card. Insert the
+card in a reader and attach it to your system.  Make sure to unmount
+any filesystems on the card that might have been automounted and note
+the device path. Note that any contents on the card will be
+overwritten by the CoreOS image. 
+
+The config file below defines the characteristics of the image to
+write to the SD card.
+
+.pi4-config.yaml
+[source, yaml]
+----
+---
+stream: stable
+architecture: aarch64
+platform: rpi4
+console: ttyS0,115200,8n1
+ignition-file: coreos-infra.ign
+-----
+
+Assuming the SD card device file is `/dev/sdb` and the ignition file
+is in the current working directory, the command to write the boot
+image is this:
+
+    sudo coreos-installer --config pi4-config.yaml /dev/sdb
+
+----
+sudo coreos-installer --architecture aarch64 --platform rpi4 \
+     --ignition-file coreos-infra.ign /dev/sdb
+----
+
+== Intel x86_64 - Live USB
 
 
 
 == References
 
-* https://coreos.github.io/butane/[Butane] +
-  The Butane format usage and specifications.
-
-* https://coreos.github.com/ignition[Ignition] +
-  The Ignition spec for CoreOS configuration.
+* https://coreos.github.io/coreos-installer/[coreos-installer] +
+  Usage and arguments for the CoreOS installer binary.  This can be
+  run from a live ISO or on a second host to write to the boot media.
 
 * https://docs.fedoraproject.org/en-US/fedora-coreos/bare-metal/[CoreOS
   on Bare Metal] +
@@ -331,12 +109,13 @@ The result of running
   instructions for installing EFI boot components that are not present
   in the Pi boot firmware.
 
-* https://www.redhat.com/en/blog/systemd-oneshot-service[systemd
-  one-shot service] +
-  A blog post on the workings of Systemd one-shot service units.
+* https://github.com/coreos/ignition[Ignition] +
+  Ignition is the engine that applies the provided configuration to a
+  new CoreOS instance on first boot.
 
-* https://coreos.github.io/coreos-installer/[coreos-installer] +
-  Usage and arguments for the CoreOS installer binary.  This can be
-  run from a live ISO or on a second host to write to the boot media.
+* https://github.com/pbatard/UEFI-Shell[UEFI-Shell] +
+  a UEFI Shell for built from EDK2 sources
 
-
+* https://github.com/pftf/RPi4/[Raspberry Pi 4 UEFI Firmware Images] +
+  A build of the UEFI-Shell specifically for Rasberry Pi 4
+ 
