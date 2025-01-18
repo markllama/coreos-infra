@@ -75,7 +75,7 @@ architecture: aarch64
 platform: rpi4
 console: ttyS0,115200,8n1
 ignition-file: coreos-infra.ign
------
+----
 
 Assuming the SD card device file is `/dev/sdb` and the ignition file
 is in the current working directory, the command to write the boot
