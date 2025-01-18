@@ -3,3 +3,7 @@
 
 # Ignore anything named "secret"
 secret
+
+# Ignore bootable images and ISOs and their signatures
+*.iso
+*.iso.sig

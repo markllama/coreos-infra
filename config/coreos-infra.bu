@@ -1,6 +1,6 @@
 # 1 - Specify the target and schema version
 variant: fcos
-version: 1.6.0
+version: 1.5.0
 
 # 2 - Provide an ssh public key for the core user
 passwd:

@@ -7,12 +7,13 @@ module. The initrd runs in memory and so it can manipulate the system
 disks if needed before they are mounted and control transfers to
 systemd to complete the boot process.
 
-The configuration created in
+The Ignition file created in
 https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[the
 previous post] defines just enough to provide access for the `core`
 user over the network by SSH, and layers the Ansible packages over the
-base. The remainder of the system customization will be defined and
-executed using Ansible.
+base. The network configuration must be supplied by DHCP. The
+remainder of the system customization will be defined and executed
+using Ansible.
 
 In this post we'll walk through the installer process for two
 different light-weight target systems, and using two different
@@ -21,9 +22,14 @@ installation methods.
 * CoreOS on Intel - Live Boot USB
 * CoreOS on Raspberry Pi 4 - Write to Bootable SD Card
 
-Both of these are also detailed in
+Both of these are detailed in
 https://docs.fedoraproject.org/en-US/fedora-coreos/getting-started/[Getting
-Started with Fedora CoreOS] documentation. 
+Started with Fedora CoreOS] documentation and those are the sources
+for this procedure. Readers who are experienced booting from a USB or
+with provisioning a Raspberry Pi can probably skip this page.
+
+The remainder of this post details the specifics of the two instances
+that will be used in later posts. 
 
 == The CoreOS Installer
 
@@ -35,15 +41,6 @@ configuration file as well. Part of the installed image is an initial
 ram-disk or `initrd`. That ram-disk runs in memory leaving the disk
 free and unmounted, ready to apply the configuration, before mounting
 the new disk and transferring control to the new system.
-
-The `coreos-installer` has 5 sub-commands for managing the
-installation process, but the only one needed for these cases is the
-`install` command. The only required argument for `coreos-installer
-install` is the target disk to write to. The important optional
-arguments allow you to determine where to pull the image from, and
-where to get the Ignition file from. Both can either pull from a
-network or local disk.
-
 
 == Raspberry Pi 4 - Install to SD Card
 
