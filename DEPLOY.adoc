@@ -60,30 +60,17 @@ any filesystems on the card that might have been automounted and note
 the device path. Note that any contents on the card will be
 overwritten by the CoreOS image. 
 
-The config file below defines the characteristics of the image to
-write to the SD card.
-
-.pi4-config.yaml
-[source, yaml]
-----
----
-stream: stable
-architecture: aarch64
-platform: rpi4
-console: ttyS0,115200,8n1
-ignition-file: coreos-infra.ign
-----
-
-Assuming the SD card device file is `/dev/sdb` and the ignition file
-is in the current working directory, the command to write the boot
-image is this:
-
-    sudo coreos-installer --config pi4-config.yaml /dev/sdb
+The command below assumes that the ignition file is `coreos-infra.ign`
+and that the target device is `/dev/sdb`. Be sure that the target
+device is correct. It will be overwritten and any prior contents lost.
 
 ----
-sudo coreos-installer --architecture aarch64 --platform rpi4 \
+sudo coreos-installer --stream stable --architecture aarch64 --platform rpi4 \
      --ignition-file coreos-infra.ign /dev/sdb
 ----
+
+
+
 
 == Intel x86_64 - Live USB
 
