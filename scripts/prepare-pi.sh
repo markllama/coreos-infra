@@ -1,12 +1,20 @@
 #!/bin/bash
-# USAGE: prepare-pi.sh <device path>
+# This script is adapted from 
+# https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4
+# EDK2: Combined Disk Mode Alternate Machine Disk Preparation
 
-if [ $? -eq 1 ] ; then
+# USAGE: prepare-pi.sh <device path> [ignition file]
+
+# Note the target device file
+if [ $# -ge 1 ] ; then
     FCOS_DISK=$1
 else
-    echo "USAGE: prepare-pi.sh <device path"
+    echo "USAGE: prepare-pi.sh <device path [ignition file]"
     exit 1
 fi
+
+# Note the provided ignition file
+[ $# -eq 2 ] && IGNITION_FILE=$2
 
 # Defaults - Override by ENVVAR
 : IGNITION_FILE=${IGNITION_FILE:=coreos-infra.ign}
