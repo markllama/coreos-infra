@@ -26,9 +26,25 @@ maintaining common network infrastructure services on CoreOS.
 
 CoreOS does not have an interactive installer, and it does not use Kickstart, the standard automated Fedora/Red Hat installer. Instead, CoreOS is installed onto the system storage using the `coreos-installer` program and a simplified system configuration schema known as `butane`. Then when the system boots for the first time the configuration is layed into the new system. 
 
-* link:./CONFIGURE.adoc[Create Configuration]
-* link:./DEPLOY.adoc[Write Bootable Media]
-* link:./FIRST_BOOT.adoc[First Boot/Install]
+* link:./CONFIGURE.adoc[Create Configuration] +
+  Define the customization parameters for a CoreOS instance
+* link:./DEPLOY.adoc[Write Bootable Media] +
+  Write the CoreOS image and overlay the customization values
+* link:./FIRST_BOOT.adoc[First Boot/Install] +
+  Observe the first boot and confirm SSH access
+
+The goal of these steps is just to provision the infrastructure hosts and ensure that they
+are accessible over the network using an SSH key to the admin user
+account. This is the mechanism that Ansible will use to connect and
+define the system services.
+
+## Configuration Management - Ansible
+
+This section glosses setup for Ansible to access the infrastructure
+servers in preparation for system service installation and
+configuration.
+
+* link:./ANSIBLE.adoc[Configure and Confirm Ansible Access]
 
 ## Network Infrastructure Services
 
