@@ -1,99 +1,31 @@
 #!/bin/bash
 
-OPTSTRING="b:di:ns:u:Uv"
+# Set a defaults - Override on CLI
+: FCOS_DISK=${FCOS_DISK:=/dev/sdb}
+: IGNITION_FILE=${IGNITION_FILE:=coreos-infra.ign}
+: FIRMWARE_VERSION=${FIRMWARE_VERSION:=1.34}
 
-UEFI_TMP=$(mktemp -d)
+FIRMWARE_URL=https://github.com/pftf/RPi4/releases/download/v${FIRMWARE_VERSION}
+FIRMWARE_ZIP=RPi4_UEFI_Firmware_v${FIRMWARE_VERSION}.zip
 
-DEFAULT_STREAM=stable
-DEFAULT_BLOCK_DEVICE=/dev/sda
-DEFAULT_IGNITION_FILE=config.ign
-DEFAULT_UEFI_VERSION=1.36
-#DEFAULT_UEFI_ONLY=
+# Install CoreOS onto the SD card
+sudo coreos-installer install --stream stable --architecture aarch64 --platform rpi4 \
+     --ignition-file ${IGNITION_FILE} ${FCOS_DISK}
 
-FW_URL_ROOT=https://github.com/pftf/RPi4/releases/download
+# Determine which partition will contain the EFI firmware files
+EFIPART=$(lsblk $FCOS_DISK -J -oLABEL,PATH  |
+	  jq -r '.blockdevices[] | select(.label == "EFI-SYSTEM")'.path)
 
+# Retrieve the EFI Firmware zip file
+curl --location --output /tmp/${FIRMWARE_ZIP} ${FIRMWARE_URL}/${FIRMWARE_ZIP}
 
-function main() {
-    echo start
-    parse_arguments $*
+# Extract the EFI firmware into the target partition
+TMPDIR=$(mktemp --directory)
+sudo mount ${EFIPART} ${TMPDIR}
+sudo unzip -o /tmp/${FIRMWARE_ZIP} -d ${TMPDIR}
 
-    [ "${UEFI_ONLY}" = "true" ] ||
-	install_coreos ${STREAM} ${BLOCK_DEVICE} ${IGNITION_FILE}
+# Clean up
+sudo umount ${TMPDIR}
+rmdir ${TMPDIR}
+rm /tmp/${FIRMWARE_ZIP}
 
-    sleep 5
-    local part="$(uefi_partition ${BLOCK_DEVICE})"
-    echo $part
-    
-    sudo mount ${part} ${UEFI_TMP}
-    get_uefi_files ${UEFI_VERSION} ${UEFI_TMP}
-    sudo umount ${part}
-    sudo rmdir ${UEFI_TMP}
-
-}
-
-function parse_arguments() {
-
-    echo parse_arguments
-    while getopts "${OPTSTRING}" opt; do
-     	case $opt in
-     	    b) BLOCK_DEVICE=${OPTARG}
-     	       ;;
-
-     	    d) DEBUG=true
-     	       ;;
-
-	    i) IGNITION_FILE=${OPTARG}
-	       ;;
-
-     	    n) NOOP=echo
-     	       ;;
-
-     	    s) STREAM=${OPTARG}
-     	       ;;
-
-	    u) UEFI_VERSION=${OPTARG}
-	       ;;
-
-	    U) UEFI_ONLY=true
-	       ;;
-	    
-	    v) VERBOSE=true
-	       ;;
-     	esac
-    done
-
-    : BLOCK_DEVICE="${BLOCK_DEVICE:=$DEFAULT_BLOCK_DEVICE}"
-    : STREAM="${STREAM:=$DEFAULT_STREAM}"
-    : IGNITION_FILE=${IGNITION_FILE:=$DEFAULT_IGNITION_FILE}
-    : UEFI_VERSION=${UEFI_VERSION:=$DEFAULT_UEFI_VERSION}
-}
-
-function install_coreos() {
-     local stream=$1
-     local disk=$2
-     local ignition=$3
-     ${NOOP} sudo coreos-installer install -a aarch64 -s $stream -i $ignition $disk
-}
-
-function uefi_partition() {
-    local block_device=$1
-    lsblk $block_device -J -oLABEL,PATH | jq -r '.blockdevices[] | select(.label == "EFI-SYSTEM")'.path
-}
-
-function get_uefi_files() {
-    local vers=$1
-    local dest=$2
-
-    local fw_zip=RPi4_UEFI_Firmware_v${vers}.zip
-    
-    #${NOOP} mkdir ${dest}
-    ${NOOP} sudo curl -L -o ${dest}/${fw_zip} $FW_URL_ROOT/v${vers}/${fw_zip}
-    ${NOOP} sudo unzip ${dest}/${fw_zip} -d ${dest}
-    ${NOOP} sudo rm -f ${dest}/${fw_zip}
-}
-
-#
-#
-#
-
-main $*
