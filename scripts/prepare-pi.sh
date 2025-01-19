@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Set a default target disk
+# Set a defaults - Override on CLI
 : FCOS_DISK=${FCOS_DISK:=/dev/sdb}
 : IGNITION_FILE=${IGNITION_FILE:=coreos-infra.ign}
 : FIRMWARE_VERSION=${FIRMWARE_VERSION:=1.34}
