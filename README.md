@@ -23,9 +23,13 @@ Here I'm going to treat the utility of CoreOS for infrastructure as a
 given and focus on the practice of deploying, configuring and
 maintaining common network infrastructure services on CoreOS.
 
-## CoreOS Deployment
+## CoreOS Configuration and Deployment
 
-CoreOS does not have an interactive installer, and it does not use Kickstart, the standard automated Fedora/Red Hat installer. Instead, CoreOS is installed onto the system storage using the `coreos-installer` program and a simplified system configuration schema known as `butane`. You can find details for deploying CoreOS in [Deploying CoreOS](./DEPLOY.md).
+CoreOS does not have an interactive installer, and it does not use Kickstart, the standard automated Fedora/Red Hat installer. Instead, CoreOS is installed onto the system storage using the `coreos-installer` program and a simplified system configuration schema known as `butane`. Then when the system boots for the first time the configuration is layed into the new system. 
+
+* [Create Configuration](./CONFIGURE.adoc)
+* [Write Bootable Media](./DEPLOY.adoc)
+* [First Boot/Install](./FIRST_BOOT.adoc)
 
 ## Network Infrastructure Services
 

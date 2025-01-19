@@ -1,3 +1,4 @@
+---
 # 1 - Specify the target and schema version
 variant: fcos
 version: 1.5.0
@@ -16,7 +17,7 @@ storage:
     - path: /etc/hostname
       contents:
         inline: |
-          infra-01.example.com
+          coreos-infra.example.com
 
     # 4a - A script to overlay the ansible packages and clean up
     - path: /usr/local/bin/install-overlay-packages
