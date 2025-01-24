@@ -37,32 +37,23 @@ CoreOS is installed using the
 https://coreos.github.io/coreos-installer/[coreos-installer]
 binary. On Fedora systems, the binary is available as an RPM. This
 program writes the stock image to the disk and writes an Ignition
-configuration file as well. Part of the installed image is an initial
-ram-disk or `initrd`. That ram-disk runs in memory leaving the disk
-free and unmounted, ready to apply the configuration, before mounting
-the new disk and transferring control to the new system.
+configuration file as well. This customizes the media so it installs
+to the correct destination and configures it on the first boot.
 
 == Raspberry Pi 4 - Install to SD Card
 
 The method of installation used here is
-https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/#_edk2_combined_disk_mode_alternate_machine_disk_preparation[EDK2:Combined Disk Mode Alternate Machine Disk Preparation]
-This method first lays down the CoreOS disk image and then adds the
-EDK2 UEFI files needed for the Pi to boot. 
+https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/#_edk2_combined_disk_mode_alternate_machine_disk_preparation[EDK2:Combined
+Disk Mode Alternate Machine Disk Preparation]
 
-The arguments to the installer can be provided in one or more YAML
-configuration files or on the command line. The configuration file
-consists of a set of YAML key/value pairs, matching the CLI arguments
-without the leading double-dash (--).
-
-Installing for a Raspberry Pi means writing to an SD card. Insert the
-card in a reader and attach it to your system.  Make sure to unmount
-any filesystems on the card that might have been automounted and note
-the device path. Note that any contents on the card will be
-overwritten by the CoreOS image. 
+Raspberry Pi systems boot from an SD card installed on the board. The
+`coreos-installer` writes the image and Ignition file to the SD card.
+When the system boots for the first time, the configuration is applied
+and the installation is complete.
 
 The command below assumes that the ignition file is `coreos-infra.ign`
-and that the target device is `/dev/sdb`. Be sure that the target
-device is correct. It will be overwritten and any prior contents lost.
+and that the target device is `/dev/sdb`. Adjust those values as
+needed for your environment
 
 ----
 sudo coreos-installer --stream stable --architecture aarch64 --platform rpi4 \
@@ -70,9 +61,39 @@ sudo coreos-installer --stream stable --architecture aarch64 --platform rpi4 \
 ----
 
 
+The CoreOS image for aarch64 is missing a set of binary blobs needed
+for the Pi's Broadcom SOC. These have been compiled and packaged by
+3rd parties and https://github.com/pftf/RPi4/releases[are available as
+ZIP files from Github].
+
+After the CoreOS installer places the default image on the SD card,
+the contents of this zip file must be overlayed into the `boot`
+partition. The installation docs above show how to do it
+manually. I've included a script
+link:scripts/prepare-pi.sh[prepare-pi.sh] That will do the whole job.
+
+    bash scripts/prepare-pi.sh <device file> <ignition file>
+
+You will be prompted by `sudo` twice for your password to execute a
+couple of commands as root.
+
+When the disk write is complete, you can remove the SD card and insert
+it into your Pi4 and power it on. Be sure that the NIC is cabled on a
+port that can reach the internet. It will perform the first-boot
+actions and reboot. 
 
 
 == Intel x86_64 - Live USB
+
+For traditional Intel servers, it's not practical to remove the system
+disk and apply the image in the way that you can with devices like the
+Raspberry Pi. Instead, the image and configuration are written to a
+bootable device like a USB stick. The configuration information
+includes the target disk on new host. The image is copied to
+the target disk and the configuration is applied. When the system
+reboots, the system disk now contains the initial CoreOS system and
+configuration.
+
 
 
 
