@@ -16,7 +16,7 @@ machines.
 Then the buzzwords come in: *minimal*, *immutable*, *checkpointed*, or
 tuned for *containerized workloads*. CoreOS was originally designed to
 run software containers and to decouple the OS functions from the
-applications and services. To learn more check out link:./COREOS.md[The Case for CoreOS].
+applications and services. To learn more check out link:./WHY_COREOS.md[The Case for CoreOS].
 
 Here I'm going to treat the utility of CoreOS for infrastructure as a
 given and focus on the practice of deploying, configuring and
@@ -26,9 +26,9 @@ maintaining common network infrastructure services on CoreOS.
 
 CoreOS does not have an interactive installer, and it does not use Kickstart, the standard automated Fedora/Red Hat installer. Instead, CoreOS is installed onto the system storage using the `coreos-installer` program and a simplified system configuration schema known as `butane`. Then when the system boots for the first time the configuration is layed into the new system. 
 
-* link:./CONFIGURE.adoc[Create Configuration] +
+* link:./COREOS_CONFIG.adoc[Create Configuration] +
   Define the customization parameters for a CoreOS instance
-* link:./DEPLOY.adoc[Write Bootable Media] +
+* link:./COREOS_PROVISION.adoc[Write Bootable Media] +
   Write the CoreOS image and overlay the customization values
 * link:./FIRST_BOOT.adoc[First Boot/Install] +
   Observe the first boot and confirm SSH access
