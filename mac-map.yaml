@@ -1,0 +1,100 @@
+---
+
+- hostname: pod-head
+  nics:
+    - mac: 02:8e:f2:fa:a0:a8
+      interface: eth0
+      description: lan br-lan
+      ipv4: 172.16.0.1/16
+    - mac: 00:8e:f2:fa:a0:a9
+      interface: eth1
+      description: wan
+      ipv4: 192.168.2.34/24
+
+- hostname: pi4-1
+  nics:
+    - mac: 2c:cf:67:7a:ec:39
+      interface: enabcm6e4ei0
+      description: RJ45
+      ipv4: 192.168.2.223/24
+    - mac: ???
+      interface: wlan0
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi4-2
+  nics:
+    - mac: 2c:cf:67:7a:eb:9e
+      interface: enabcm6e4ei0
+      description: RJ45
+      ipv4: 192.168.2.233 
+    - mac: ???
+      interface: wlan0
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi4-3
+  alias: streaming-kvm
+  description: tinypilot
+  nics:
+    - mac: dc:a6:32:a4:23:21
+      interface: eth0
+      description: RJ45
+      ipv4: 192.168.2.233 
+    - mac: dc:a6:32:a4:23:22
+      interface: wlan0
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi5-1
+  alias: knode-01
+  description: pi5 8GB
+  nics:
+    - mac: 2c:cf:67:8b:53:62
+      interface: eth0
+      description: RJ45
+      ipv4: ""
+    - mac: 2c:cf:67:8b:53:63
+      interface: wlan01
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi5-2
+  alias: knode-02
+  description: pi5 8GB
+  nics:
+    - mac: 2c:cf:67:8b:53:e7
+      interface: eth0
+      description: RJ45
+      ipv4: ""
+    - mac: 2c:cf:67:8b:53:e8
+      interface: wlan01
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi5-3
+  alias: knode-03
+  description: pi5 8GB
+  nics:
+    - mac: ""
+      interface: eth0
+      description: RJ45
+      ipv4: ""
+    - mac: ""
+      interface: wlan01
+      description: WIFI
+      ipv4: ""
+
+- hostname: pi5-4
+  alias: knode-04
+  description: pi5 8GB
+  nics:
+    - mac: ""
+      interface: eth0
+      description: RJ45
+      ipv4: ""
+    - mac: ""
+      interface: wlan01
+      description: WIFI
+      ipv4: ""
+

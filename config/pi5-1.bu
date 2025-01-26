@@ -7,14 +7,14 @@ passwd:
     - name: core
       password_hash: "$y$j9T$SaOLMVafuREVdfdBN5A9H0$b9r69cSizszBOeCfHhQ9ypPw5aI8bb0ALfhCqLvOjE1"
       ssh_authorized_keys_local:
-      - infra-ansible-ed25519.pub
+        - infra-ansible-ed25519.pub
 
 storage:
   files:
     - path: /etc/hostname
       contents:
         inline: |
-          pi4-1.lamourine.org
+          pi5-1.lamourine.org
 
 # TODO - add file and service to install ansible
     - path: /usr/local/bin/install-overlay-packages

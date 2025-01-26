@@ -1,4 +1,4 @@
-= Deploying CoreOS
+= Provisioning CoreOS
 
 CoreOS installs by laying an image onto the boot disk and writing the
 configuration file so that it is available on first boot. The initrd
@@ -15,7 +15,7 @@ base. The network configuration must be supplied by DHCP. The
 remainder of the system customization will be defined and executed
 using Ansible.
 
-In this post we'll walk through the installer process for two
+In this post we'll walk through the process of writing the boot media for two
 different light-weight target systems, and using two different
 installation methods.
 
@@ -28,8 +28,7 @@ Started with Fedora CoreOS] documentation and those are the sources
 for this procedure. Readers who are experienced booting from a USB or
 with provisioning a Raspberry Pi can probably skip this page.
 
-The remainder of this post details the specifics of the two instances
-that will be used in later posts. 
+The result of each of these two procedures is a piece of bootable media with the CoreOS image and Ignition file, ready for first boot and installation.
 
 == The CoreOS Installer
 
@@ -51,12 +50,13 @@ Raspberry Pi systems boot from an SD card installed on the board. The
 When the system boots for the first time, the configuration is applied
 and the installation is complete.
 
+=== ARM 
 The command below assumes that the ignition file is `coreos-infra.ign`
 and that the target device is `/dev/sdb`. Adjust those values as
 needed for your environment
 
 ----
-sudo coreos-installer --stream stable --architecture aarch64 --platform rpi4 \
+sudo coreos-installer --stream stable --architecture aarch64 \
      --ignition-file coreos-infra.ign /dev/sdb
 ----
 

@@ -18,7 +18,7 @@ fi
 
 # Defaults - Override by ENVVAR
 : IGNITION_FILE=${IGNITION_FILE:=coreos-infra.ign}
-: FIRMWARE_VERSION=${FIRMWARE_VERSION:=1.34}
+: FIRMWARE_VERSION=${FIRMWARE_VERSION:=1.40}
 
 FIRMWARE_URL=https://github.com/pftf/RPi4/releases/download/v${FIRMWARE_VERSION}
 FIRMWARE_ZIP=RPi4_UEFI_Firmware_v${FIRMWARE_VERSION}.zip
