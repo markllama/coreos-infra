@@ -31,8 +31,7 @@ storage:
             systemctl disable install-overlay-packages
             rm /etc/systemd/system/install-overlay-packages.service
           else
-            rpm-ostree install --assumeyes ansible
-            systemctl reboot
+            rpm-ostree install --assumeyes ansible && systemctl reboot
           fi
 
 systemd:

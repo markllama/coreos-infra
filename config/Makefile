@@ -1,22 +1,18 @@
 #!/bin/make -f
-BUTANE_FILES_DIR=$(HOME)/.ssh
+SSH_FILES_DIR=$(HOME)/.ssh
 DOMAIN=lamourine.org
 
-all: intel-1.ign intel-2.ign intel-3.ign pi4-1.ign
+HOSTS=intel-1 intel-2 intel-3 pi4-1 pi4-2 pi4-3 pi4-4 pi5-1 pi5-2 pi5-3 pi5-4
 
-intel-1.ign: fcos-base.bu.j2
-	jinja2 -D hostname=intel-1.$(DOMAIN) fcos-base.bu.j2 | \
-	butane --files-dir=$(BUTANE_FILES_DIR) > intel-1.ign
+CONFIGS=$(shell echo ${HOSTS} | tr ' ' "\n" | xargs -I{} echo {}.ign)
 
-intel-2.ign: fcos-base.bu.j2
-	jinja2 -D hostname=intel-2.$(DOMAIN) fcos-base.bu.j2 | \
-	butane --files-dir=$(BUTANE_FILES_DIR) > intel-2.ign
+all: $(CONFIGS)
 
-intel-3.ign: fcos-base.bu.j2
-	jinja2 -D hostname=intel-3.$(DOMAIN) fcos-base.bu.j2 | \
-	butane --files-dir=$(BUTANE_FILES_DIR) > intel-3.ign
+$(CONFIGS):%.ign:fcos-base.bu.j2
+	@echo target is $@, source is $<
+	FCOS_HOSTNAME=$(shell basename $@ .ign) ; \
+	jinja2 -D hostname=$${FCOS_HOSTNAME}.$(DOMAIN) $< | \
+	butane --pretty --files-dir $(SSH_FILES_DIR) --output $@
 
-pi4-1.ign: fcos-base.bu.j2
-	jinja2 -D hostname=pi4-1.$(DOMAIN) fcos-base.bu.j2 | \
-	butane --files-dir=$(BUTANE_FILES_DIR) > pi4-1.ign
-
+#test:
+#    $(foreach var,$(.VARIABLES),$(info $(var) = $($(var))))
