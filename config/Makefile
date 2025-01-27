@@ -13,6 +13,3 @@ $(CONFIGS):%.ign:fcos-base.bu.j2
 	FCOS_HOSTNAME=$(shell basename $@ .ign) ; \
 	jinja2 -D hostname=$${FCOS_HOSTNAME}.$(DOMAIN) $< | \
 	butane --pretty --files-dir $(SSH_FILES_DIR) --output $@
-
-#test:
-#    $(foreach var,$(.VARIABLES),$(info $(var) = $($(var))))
