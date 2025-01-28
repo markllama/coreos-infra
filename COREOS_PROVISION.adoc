@@ -30,7 +30,7 @@ not strictly necessary.
 == Bare Metal Installation - Intel
 
 The Bare Metal installation is the most straightforward. It consists
-of just four steps:
+of just five steps:
 
 . Download CoreOS ISO image
 . Customize ISO image - Destination Disk and Ignition File
