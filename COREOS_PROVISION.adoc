@@ -32,11 +32,11 @@ not strictly necessary.
 The Bare Metal installation is the most straightforward. It consists
 of just four steps:
 
-* Download CoreOS ISO image
-* Customize ISO image - Destination Disk and Ignition File
-* Write ISO to USB Stick
-* Boot from the USB stick
-* Boot from the target disk
+. Download CoreOS ISO image
+. Customize ISO image - Destination Disk and Ignition File
+. Write ISO to USB Stick
+. Boot from the USB stick
+. Boot from the target disk
 
 This example assumes that the Ignition file for the host is
 `coreos-config.ign` and the destination disk is `/dev/sda`. The
