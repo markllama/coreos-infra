@@ -120,6 +120,10 @@ the Raspberry Pi 4 and power it on. Assuming that the Pi is connected to a netwo
 
 In both cases, at that point the new system is by SSH using the `core` user and it is ready to be managed by Ansible.
 
+== Finally Ready
+
+With the OS installation complete it becomes possible to start addressing the goal of this series: Deploying containerized network services with Ansible. Keep an eye out for the next post where we'll configure Ansible and demonstrate that we have connectivity and control of our target hosts.
+
 == References
 
 * https://coreos.github.io/coreos-installer/[coreos-installer] +
