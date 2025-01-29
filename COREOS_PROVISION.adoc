@@ -90,7 +90,7 @@ CoreOS is still waiting for updated EFI and BMC files.
 The Raspberry Pi boots from an integrated SD card reader.  The CoreOS
 image is written to the SD card along with the Ignition file. The
 CoreOS image for aarch64 needs a bootloader, either U-Boot or EFI to
-boot correctly.  This process installs a set of EFI binaries and
+boot correctly. This process installs a set of EFI binaries and
 auxiliary files into the boot partition to take the place of the
 typical firmware that other systems would have.
 
@@ -100,10 +100,25 @@ file and the configuration is laid into the storage before mounting
 the disk filesystems and handing control to the init process.
 
 The process of writing all the files to the SD card is described in
-]. The bare metal procedure
-is very close to identical.  For the Raspberry Pi 4 procedure the
-individual steps have been scripted to a single command, but that is
-not strictly necessary.
+https://docs.fedoraproject.org/en-US/fedora-coreos/provisioning-raspberry-pi4/#_edk2_combined_fedora_coreos_edk2_firmware_disk[Booting
+on Raspberry Pi 4 - EDK2: Combined Fedora CoreOS + EDK2 Firmware
+Disk]. First the stock raw CoreOS aarch64 image is written to the SD
+card. Then the EFI partition is mounted and the EDK2 UEFI firmware is
+written. At that point the SD card is bootable on a Raspberry Pi 4.
+
+The complete procedure for writing the SD Card is provide in the link:scripts[scripts] sub-directory: link:scripts/prepare-pi.sh[prepare-pi.sh]
+
+Connect the SD card to the working system.  Make sure that any auto-mounted partitions are unmounted before proceding. Determine the device path and provide the ignition file.
+
+.prepare-sd.sh
+----
+bash scripts/prepare-sd.sh <device path> <ignition file>
+----
+
+As with the Intel media, the final step is to install the SD Card in
+the Raspberry Pi 4 and power it on. Assuming that the Pi is connected to a network with DHCP and internet access, it will boot, complete the Ignition installation, install Ansible and reboot itself.
+
+In both cases, at that point the new system is by SSH using the `core` user and it is ready to be managed by Ansible.
 
 == References
 

@@ -27,9 +27,6 @@ FIRMWARE_ZIP=RPi4_UEFI_Firmware_v${FIRMWARE_VERSION}.zip
 sudo coreos-installer install --stream stable --architecture aarch64 \
      --ignition-file ${IGNITION_FILE} ${FCOS_DISK}
 
-sync
-sleep 2
-
 # Determine which partition will contain the EFI firmware files
 EFIPART=$(lsblk $FCOS_DISK -J -oLABEL,PATH  |
 	  jq -r '.blockdevices[] | select(.label == "EFI-SYSTEM")'.path)
