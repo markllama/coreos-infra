@@ -2,7 +2,7 @@
 
 Installing CoreOS on a new system involves just booting a copy of the
 installation media with the configuration file
-(link:./COREOS_CONFIG.adoc[produced earlier]) embedded. On most
+(https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[produced earlier]) embedded. On most
 systems, the installation media is a USB stick and the target storage
 is an internal disk or SSD. The CoreOS image is copied bitwise to the
 destination and is then tuned according to the configuration file. On
@@ -106,7 +106,7 @@ Disk]. First the stock raw CoreOS aarch64 image is written to the SD
 card. Then the EFI partition is mounted and the EDK2 UEFI firmware is
 written. At that point the SD card is bootable on a Raspberry Pi 4.
 
-The complete procedure for writing the SD Card is provide in the link:scripts[scripts] sub-directory: link:scripts/prepare-pi.sh[prepare-pi.sh]
+The complete procedure for writing the SD Card is provide in the https://github.com/markllama/coreos-infra/blob/main/scripts[scripts] sub-directory: https://github.com/markllama/coreos-infra/blob/main/scripts/prepare-pi.sh[prepare-pi.sh]
 
 Connect the SD card to the working system.  Make sure that any auto-mounted partitions are unmounted before proceding. Determine the device path and provide the ignition file.
 

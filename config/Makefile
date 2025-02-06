@@ -2,7 +2,7 @@
 SSH_FILES_DIR=$(HOME)/.ssh
 DOMAIN=lamourine.org
 
-HOSTS=intel-1 intel-2 intel-3 pi4-1 pi4-2 pi4-3 pi4-4 pi5-1 pi5-2 pi5-3 pi5-4
+HOSTS=intel-1 intel-2 intel-3 pi3-1 pi3-2 pi4-1 pi4-2 pi4-3 pi4-4 pi5-1 pi5-2 pi5-3 pi5-4
 
 CONFIGS=$(shell echo ${HOSTS} | tr ' ' "\n" | xargs -I{} echo {}.ign)
 
