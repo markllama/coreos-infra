@@ -17,14 +17,20 @@ following posts.
 The example playbooks in this and following posts all expect to be run
 from the top of an Ansible file tree.
 
+.Minimal Ansible directory tree
 ----
-tree
+$ tree
 .
 ├── ansible.cfg
 └── inventory.yaml
 
 1 directory, 2 files
 ----
+
+This tree will expand as playbooks are added to prepare and deploy the
+network services to the server devices.
+
+== Minimal Ansible Configuration
 
 Ansible looks for a configuration file, `ansible.cfg` in the current
 working directory when Ansible is invoked. The following minimal
