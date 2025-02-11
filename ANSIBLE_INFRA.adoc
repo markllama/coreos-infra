@@ -1,0 +1,40 @@
+//
+= Ansible Infrastructure
+
+This post is going to be another boilerplate, the last before actually
+getting to creating infratructure services on CoreOS.
+
+At this point, if you've been following the series up to now, there
+are a pair of devices running CoreOS on the network. They can be Intel
+or ARM. Each has a user account with SSH access via an SSH key and `sudo` set to
+allow commands as root with no password.
+
+Again, there are numerous references and tutorials showing how to set
+up Ansible. See link:references[References]. This document just
+defines the working parameters of the infrastructure system for the
+following posts.
+
+== Infrastrucure Devices
+
+The network infrastructure devices in this case are a pair of hosts
+running https://fedoraproject.org/coreos[Fedora CoreOS]. They are
+configured on the network with fixed IP addresses. They are accessable
+via SSH using a key pair on the `core` account. That account has
+`sudo` access with no password. It has Ansible installed as a layered
+package so that the required Python packages are present.
+
+For purposes of the example, these are the the access parameters:
+
+[source,yaml]
+----
+hosts:
+hostname: ns1.example.com
+ip address: 
+----
+
+== References
+
+* https://docs.ansible.com/ansible/latest/getting_started/get_started_ansible.html#get-started-ansible[Getting Started with Ansible]
+* https://docs.ansible.com/ansible/latest/inventory_guide/index.html[Ansible Inventory]
+
+
