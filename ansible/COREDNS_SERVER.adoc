@@ -1,0 +1,12 @@
+// CoreDNS server by Ansible Playbook
+= DNS Service - CoreDNS
+https://coredns.io[CoreDNS] was developed for use in
+https://kubernetes.io/[Kubernetes] as a light-weight name server for
+containerized services. For a small to medium sized network, CoreDNS
+is much simpler to configure and operate than any of the production
+quality alternatives.
+== References
+
+* https://coredns.io[CoreDNS]
+
+* https://kerbernetes.io[Kubernetes]

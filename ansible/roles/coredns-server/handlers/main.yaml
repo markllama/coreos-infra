@@ -1,8 +1,3 @@
-- name: Reload Systemd Units
-  systemd_service:
-    daemon_reload: true
-  notify: Restart CoreDNS Service
-
 - name: Restart CoreDNS Service
   service:
     name: coredns
