@@ -14,7 +14,7 @@ up Ansible. See link:references[References]. This document just
 defines the working parameters of the infrastructure system for the
 following posts.
 
-== Infrastrucure Devices
+== Infrastructure Devices
 
 The network infrastructure devices in this case are a pair of hosts
 running https://fedoraproject.org/coreos[Fedora CoreOS]. They are
@@ -26,6 +26,7 @@ package so that the required Python packages are present.
 For purposes of the example, these are the the access parameters,
 expressed as an Ansible YAML inventory file:
 
+.inventory.yaml
 [source,yaml]
 ----
 ---
