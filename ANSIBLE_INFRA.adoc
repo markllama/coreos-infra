@@ -17,7 +17,7 @@ following posts.
 The example playbooks in this and following posts all expect to be run
 from the top of an Ansible file tree.
 
-.Minimal Ansible directory tree
+.**Minimal Ansible directory tree**
 ----
 $ tree
 .
@@ -37,7 +37,7 @@ working directory when Ansible is invoked. The following minimal
 configuration file directs Ansible also to find the inventory in the
 current working directory.
 
-.ansible.cfg
+.`ansible.cfg`
 [source,ini]
 ----
 [defaults]
@@ -58,7 +58,7 @@ package so that the required Python packages are present.
 For purposes of the example, these are the the access parameters,
 expressed as an Ansible YAML inventory file:
 
-.inventory.yaml
+.`inventory.yaml`
 [source,yaml]
 ----
 ---
