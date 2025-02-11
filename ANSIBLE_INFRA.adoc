@@ -14,12 +14,38 @@ up Ansible. See link:references[References]. This document just
 defines the working parameters of the infrastructure system for the
 following posts.
 
+The example playbooks in this and following posts all expect to be run
+from the top of an Ansible file tree.
+
+----
+tree
+.
+├── ansible.cfg
+└── inventory.yaml
+
+1 directory, 2 files
+----
+
+Ansible looks for a configuration file, `ansible.cfg` in the current
+working directory when Ansible is invoked. The following minimal
+configuration file directs Ansible also to find the inventory in the
+current working directory.
+
+.ansible.cfg
+[source,ini]
+----
+[defaults]
+inventory = ./inventory.yaml
+deprecation_warnings = False
+----
+
 == Infrastructure Devices
 
 The network infrastructure devices in this case are a pair of hosts
 running https://fedoraproject.org/coreos[Fedora CoreOS]. They are
 configured on the network with fixed IP addresses. They are accessable
-via SSH using a key pair on the `core` account. That account has
+via SSH using a key pair on the `core` account. Each device host key has been
+added to the local SSH `known_hosts` list by logging in one time. That account has
 `sudo` access with no password. It has Ansible installed as a layered
 package so that the required Python packages are present.
 
@@ -40,6 +66,10 @@ infrastructure:
     infra2:
       ansible_host: 192.168.2.186
 ----
+
+== Checking Connectivity
+
+
 
 == References
 
