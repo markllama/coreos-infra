@@ -75,6 +75,11 @@ infrastructure:
 
 == Checking Connectivity
 
+The final step in preparing the hosts to be managed is to
+confirm... well that they can be managed. The Ansible `ping` module
+just connects to the managed host and reports that a suitable Python
+environment is present. 
+
 .Check Connectivity
 [source,bash]
 ----
@@ -95,6 +100,10 @@ infra2 | SUCCESS => {
 }
 
 ----
+
+With these steps it's finally time to start configuring stuff. The
+next post describes how to create a local DNS service using CoreDNS on CoreOS.
+
 
 == References
 
