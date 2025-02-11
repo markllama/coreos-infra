@@ -23,13 +23,21 @@ via SSH using a key pair on the `core` account. That account has
 `sudo` access with no password. It has Ansible installed as a layered
 package so that the required Python packages are present.
 
-For purposes of the example, these are the the access parameters:
+For purposes of the example, these are the the access parameters,
+expressed as an Ansible YAML inventory file:
 
 [source,yaml]
 ----
-hosts:
-hostname: ns1.example.com
-ip address: 
+---
+infrastructure:
+  vars:
+    ansible_user: core
+    ansible_ssh_private_key_file: secrets/infra-ansble-ed25519
+  hosts:
+    infra1:
+      ansible_host: 192.168.2.185
+    infra2:
+      ansible_host: 192.168.2.186
 ----
 
 == References
