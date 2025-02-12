@@ -5,6 +5,50 @@ https://kubernetes.io/[Kubernetes] as a light-weight name server for
 containerized services. For a small to medium sized network, CoreDNS
 is much simpler to configure and operate than any of the production
 quality alternatives.
+
+
+== `coredns-server` Playbook
+
+.`coredns-server-pb.yaml`
+[source,yaml]
+----
+---
+#
+# The playbook creates a DNS server on the target hosts using CoreDNS
+# It populates the zone files from files/zones
+#
+- name: CoreDNS Server
+  hosts: dnsservers
+  become: true
+
+  vars_files:
+    - dns_services.yaml
+
+  roles:
+    - coredns-server
+----
+
+== `coredns-server` Role
+
+.coredns-server role tree
+----
+roles/coredns-server/
+├── files
+│   └── coredns.container
+├── handlers
+│   └── main.yaml
+├── tasks
+│   ├── config_files.yaml
+│   ├── main.yaml
+│   └── systemd_service.yaml
+└── templates
+    ├── Corefile.j2
+    └── resolv.conf.j2
+
+5 directories, 7 files
+----
+
+
 == References
 
 * https://coredns.io[CoreDNS]
