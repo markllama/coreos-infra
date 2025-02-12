@@ -1,0 +1,34 @@
+- name: Disable systemd-resolved - (avoid conflict with coredns)
+  service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+
+- name: Set static resolver file
+  template:
+    dest: /etc/resolv.conf
+    src: resolv.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Set systemd container file
+  copy:
+    dest: /etc/containers/systemd/coredns.container
+    src: coredns.container
+    owner: root
+    group: root
+    mode: 644
+  register: create_unit
+
+- name: Reload Systemd Units
+  systemd_service:
+    daemon_reload: true
+    notify: Restart CoreDNS Service
+  when: create_unit.changed is true
+
+- name: Enable and Start CoreDNS container
+  service:
+    name: coredns.service
+    state: started
+    enabled: true
