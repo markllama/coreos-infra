@@ -107,7 +107,12 @@ roles/coredns-server/
 5 directories, 9 files
 ----
 
-
+The task files are the primary driver of a playbook and role. The rest
+of the files provide resources that serve the tasks as they
+are run. The file `main.yaml` acts as the entry point for the tasks
+defined in the `tasks/` subdirectory. The tasks are defined as if they
+were part of a playbook, as a YAML list. When the task list becomes
+unmanagably large.
 
 
 
