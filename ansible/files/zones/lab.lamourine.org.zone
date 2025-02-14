@@ -3,7 +3,7 @@
 ;
 $ORIGIN lab.lamourine.org.
 @	IN  SOA ns1.lab.lamourine.org. markllama.gmail.com. (
-	       2024112205  ; serial number
+	       2025021402  ; serial number
 	       7200        ; refresh
 	       3600	    ; retry
 	       1209600	    ; expire 
@@ -13,5 +13,50 @@ $ORIGIN lab.lamourine.org.
 	IN NS ns1.lab.lamourine.org.
 	IN NS ns2.lab.lamourine.org.
 
-ns1	IN A  192.168.1.6
-ns2	IN A  192.168.1.7
+ns1	IN A  192.168.1.10
+ns2	IN A  192.168.1.11
+
+;
+; Lab Network - 192.168.2.150-199
+;
+; Network Devices
+border	IN	A	192.168.2.150
+
+switch-01	IN	A	192.168.2.151
+switch-02	IN	A	192.168.2.152
+
+switch-04	IN	A	192.168.2.154
+switch-05	IN	A	192.168.2.155
+
+; Power Control
+strip-1	IN	A	192.168.2.160
+strip-2	IN	A	192.168.2.161
+
+; Intel Servers
+intel-01	IN	A	192.168.2.170
+intel-02	IN	A	192.168.2.171
+intel-03	IN	A	192.168.2.172
+
+; Raspberry Pi 2
+pi2-1	    IN A	192.168.2.180
+pi2-2	    IN A	192.168.2.181
+
+; Raspberry Pi 3
+pi3-1	    IN A	192.168.2.182
+pi3-2	    IN A	192.168.2.183
+
+; Raspberry Pi 4
+pi4-1	    IN A	192.168.2.184
+pi4-2	    IN A	192.168.2.185
+pi4-3	    IN A	192.168.2.186
+pi4-4	    IN A	192.168.2.187
+
+; Raspberry Pi 5
+pi5-1	    IN A	192.168.2.190
+pi5-2	    IN A	192.168.2.191
+pi5-3	    IN A	192.168.2.192
+pi5-4	    IN A	192.168.2.193
+
+
+
+
