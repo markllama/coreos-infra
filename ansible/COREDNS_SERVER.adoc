@@ -120,7 +120,7 @@ to a set of smaller task files, grouping the tasks functionally.
 .`tasks\main.yaml`
 [,ansible]
 ----
-include::roles/coredns-server/tasks/main.yaml
+include::roles/coredns-server/tasks/main.yaml[]
 ----
 
 
