@@ -118,7 +118,7 @@ were part of a playbook, as a YAML list. The `main.yaml` file refers
 to a set of smaller task files, grouping the tasks functionally.
 
 .`tasks\main.yaml`
-[source,ansible]
+[,ansible]
 ----
 include::roles/coredns-server/tasks/main.yaml
 ----
