@@ -107,12 +107,23 @@ roles/coredns-server/
 5 directories, 9 files
 ----
 
+
+=== `tasks\main.yaml`
+
 The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
 are run. The file `main.yaml` acts as the entry point for the tasks
 defined in the `tasks/` subdirectory. The tasks are defined as if they
-were part of a playbook, as a YAML list. When the task list becomes
-unmanagably large.
+were part of a playbook, as a YAML list. The `main.yaml` file refers
+to a set of smaller task files, grouping the tasks functionally.
+
+.`tasks\main.yaml`
+[source,ansible]
+----
+include::roles/coredns-server/tasks/main.yaml
+----
+
+
 
 
 
