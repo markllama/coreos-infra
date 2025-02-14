@@ -32,10 +32,29 @@ The CoreDNS container image is always found here:
     docker.io/coredns/coredns:latest
 
 
-
-
-
 == `coredns-server` Playbook
+
+The goal of the `coredns-server` playbook is to install and configure
+CoreDNS on a set of servers. The servers need to listen for and
+respond to DNS queries on port 53/UDP on one of a set of listed IPv4
+addresses. The service runs in a software container and is managed as
+a `systemd` service.
+
+The deployment steps can be grouped into four related sets of tasks:
+
+1. Switch to static resolver
+1. Configure network interface
+1. Deploy CoreDNS configuration
+1. Configure `systemd` service
+
+For clarities sake these four are broken down into separate task files
+in the `coredns-server` role. These are detailed in corresponding
+sections link:coredns-server-role[below].
+
+An Ansible playbook is defined in a `.yaml` formatted file. It is
+possible to contain the entire playbook in a single file, but it is
+usually helpful to have the playbook use a *role*. Roles are re-usable
+modules that 
 
 .`coredns-server-pb.yaml`
 [source,yaml]
@@ -56,13 +75,20 @@ The CoreDNS container image is always found here:
     - coredns-server
 ----
 
+The `dns_services.yaml` file specifies the parameters for the CoreDNS
+server. Among these are the locations and zones for the
+https://en.wikipedia.org/wiki/Zone_file[zone files]. These reside in
+`files/zones` in the ansible directory. The zone files here are static
+and follow the RFC standards and will be familar to anyone who's
+configured https://www.isc.org/bind/[ISC Bind]. They could be produced
+mechanically from other databases but that is outside the scope of
+this project.
 
-
+[#coredns-server-role]
 == `coredns-server` Role
 
 .coredns-server role tree
-----
-roles/coredns-server/
+----roles/coredns-server/
 ├── files
 │   └── coredns.container
 ├── handlers
@@ -70,19 +96,27 @@ roles/coredns-server/
 ├── tasks
 │   ├── config_files.yaml
 │   ├── main.yaml
+│   ├── network.yaml
+│   ├── resolver.yaml
 │   └── systemd_service.yaml
 └── templates
     ├── Corefile.j2
     └── resolv.conf.j2
 
-5 directories, 7 files
+5 directories, 9 files
 ----
+
+
+
+
+
+
+
 
 
 == References
 
 * https://coredns.io[CoreDNS]
-
+* https://www.isc.org/bind/[ISC Bind]
 * https://kerbernetes.io[Kubernetes]
-
 * https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]

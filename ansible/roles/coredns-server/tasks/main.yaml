@@ -2,6 +2,9 @@
 #
 # Coordinate creating a coredns service container
 #
+- name: Disable systemd-resolved and set static resolver file
+  import_tasks: resolver.yaml
+
 - name: Configure and set DNS Listener IP address
   import_tasks: network.yaml
 

@@ -1,17 +1,3 @@
-- name: Disable systemd-resolved - (avoid conflict with coredns)
-  service:
-    name: systemd-resolved
-    state: stopped
-    enabled: false
-
-- name: Set static resolver file
-  template:
-    dest: /etc/resolv.conf
-    src: resolv.conf.j2
-    owner: root
-    group: root
-    mode: 0644
-
 - name: Set systemd container file
   copy:
     dest: /etc/containers/systemd/coredns.container
