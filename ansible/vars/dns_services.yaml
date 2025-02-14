@@ -6,12 +6,10 @@ dns:
   nameservers:
     pi4-1:
       fqdn: ns1.lamourine.org
-      connection: "Wired connection 1"
       device: enabcm6e4ei0
       ipv4: 192.168.2.10
     pi4-2:
       fqdn: ns1.lamourine.org
-      connection: "Wired connection 1"
       device: enabcm6e4ei0
       ipv4: 192.168.2.11
 
@@ -21,13 +19,12 @@ dns:
     - 1.0.0.1
     
   zones:
-    - fqdn: home.lamourine.org
-      file: home.lamourine.org.zone
+    - fqdn: lamourine.org
+      file: lamourine.org.zone
     - fqdn: lab.lamourine.org
       file: lab.lamourine.org.zone
 
   search:
     - lan    # mDNS from Google Mesh DNS
-    - home.lamourine.org
-    - lab.lamourine.org
     - lamourine.org
+    - lab.lamourine.org
