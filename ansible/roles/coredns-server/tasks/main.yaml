@@ -2,13 +2,11 @@
 #
 # Coordinate creating a coredns service container
 #
+- name: Configure and set DNS Listener IP address
+  import_tasks: network.yaml
 
-#
-# Prepare the configuration space on the host
-#
 - name: Place the Configration Files
   import_tasks: config_files.yaml
-      
-- name: Prepare Services
+
+- name: Prepare Systemd Services
   import_tasks: systemd_service.yaml
-    

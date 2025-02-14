@@ -24,8 +24,8 @@
 - name: Reload Systemd Units
   systemd_service:
     daemon_reload: true
-    notify: Restart CoreDNS Service
-  when: create_unit.changed is true
+  notify: Restart CoreDNS Service
+  #when: create_unit.changed is true
 
 - name: Enable and Start CoreDNS container
   service:

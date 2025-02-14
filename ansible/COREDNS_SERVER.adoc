@@ -7,6 +7,33 @@ containerized services. For a small to medium sized network, CoreDNS
 is much simpler to configure and operate than any of the production
 quality alternatives.
 
+== Running CoreDNS
+
+The CoreDNS configuration consists of a single configuration file and
+a set of  https://en.wikipedia.org/wiki/Zone_file[DNS zone
+files]. The files can be contained in a single directory, commonly
+`/opt/coredns`. The program looks for a file called `Corefile` in the
+current working directory when it is invoked. 
+
+CoreDNS is meant to be run in a software container. CoreOS provides
+https://podman.io[`podman`], a drop-in CLI replacement for Docker and
+the `runc` runtime.
+
+DNS servers listen to UDP port 53 for queries. TCP port 53 is used for
+some operations such as zone transfers and secure DNS. By default it
+listens on all configured interfaces.
+
+The configuration used in this example is meant for use inside a
+firewalled network. It does not serve queries to devices outside the
+local network. It is meant to provide a split-dns
+
+The CoreDNS container image is always found here:
+
+    docker.io/coredns/coredns:latest
+
+
+
+
 
 == `coredns-server` Playbook
 
@@ -28,6 +55,8 @@ quality alternatives.
   roles:
     - coredns-server
 ----
+
+
 
 == `coredns-server` Role
 
@@ -55,3 +84,5 @@ roles/coredns-server/
 * https://coredns.io[CoreDNS]
 
 * https://kerbernetes.io[Kubernetes]
+
+* https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]

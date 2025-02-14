@@ -1,0 +1,31 @@
+- name: Record interface name(s)
+  set_fact:
+    default_interface_name: "{{ ansible_default_ipv4.interface }}"
+
+- name: Report the DNS listener address for "{{ ansible_hostname }}"
+  debug:
+    msg: "DNS interface for {{ ansible_hostname }} {{ dns.nameservers[ansible_hostname].ipv4 }}"
+
+- name: Configure interface
+  nmcli:
+    conn_name: "{{ ansible_default_ipv4.interface }}"
+    type: ethernet
+    ifname: "{{ ansible_default_ipv4.interface }}"
+    ip4:
+      - "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.prefix }}"
+      - "{{ dns.nameservers[ansible_hostname].ipv4 }}"
+    gw4: "{{ ansible_default_ipv4.gateway}}"
+    state: present
+  register: new_connection
+
+- name: Delete the default wired connection entry
+  nmcli:
+    conn_name: "Wired connection 1"
+    state: absent
+  register: old_connection
+
+- name: Restart NetworkManager if needed
+  systemd:
+    name: NetworkManager
+    state: restarted
+  when: old_connection.changed is true or new_connection.changed is true
