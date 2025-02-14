@@ -89,7 +89,7 @@ this project.
 
 .coredns-server role tree
 ----
-----roles/coredns-server/
+roles/coredns-server/
 ├── files
 │   └── coredns.container
 ├── handlers
