@@ -49,7 +49,7 @@ The deployment steps can be grouped into four related sets of tasks:
 
 For clarities sake these four are broken down into separate task files
 in the `coredns-server` role. These are detailed in corresponding
-sections link:coredns-server-role[below].
+sections link:#coredns-server-role[below].
 
 An Ansible playbook is defined in a `.yaml` formatted file. It is
 possible to contain the entire playbook in a single file, but it is
