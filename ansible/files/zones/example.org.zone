@@ -1,17 +1,17 @@
 ;
 ; 
 ;
-$ORIGIN lamourine.org.
-@	IN  SOA ns1.lamourine.org. markllama.gmail.com. (
-	       2025021412  ; serial number
+$ORIGIN example.org.
+@	IN  SOA ns1.example.org. markllama.gmail.com. (
+	       2025021413  ; serial number
 	       7200        ; refresh
 	       3600	    ; retry
 	       1209600	    ; expire 
 	       3600	    ; minimum
 )
 
-	IN NS ns1.lamourine.org.
-	IN NS ns2.lamourine.org.
+	IN NS ns1.example.org.
+	IN NS ns2.example.org.
 
 ;
 ; Network Infrastructure
@@ -29,8 +29,8 @@ switch-03    IN A  192.168.2.7
 ns1	      IN A  192.168.2.10
 ns2	      IN A  192.168.2.11
 
-;; ns1.lab.lamourine.org.	      IN A  192.168.2.10
-;; ns2.lab.lamourine.org.	      IN A  192.168.2.11
+;; ns1.lab.example.org.	      IN A  192.168.2.10
+;; ns2.lab.example.org.	      IN A  192.168.2.11
 
 ;
 ; Voice Assistants

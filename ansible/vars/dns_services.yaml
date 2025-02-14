@@ -5,11 +5,11 @@
 dns:
   nameservers:
     pi4-1:
-      fqdn: ns1.lamourine.org
+      fqdn: ns1.example.org
       device: enabcm6e4ei0
       ipv4: 192.168.2.10
     pi4-2:
-      fqdn: ns1.lamourine.org
+      fqdn: ns1.example.org
       device: enabcm6e4ei0
       ipv4: 192.168.2.11
 
@@ -19,12 +19,12 @@ dns:
     - 1.0.0.1
     
   zones:
-    - fqdn: lamourine.org
-      file: lamourine.org.zone
-    - fqdn: lab.lamourine.org
-      file: lab.lamourine.org.zone
+    - fqdn: example.org
+      file: example.org.zone
+    - fqdn: lab.example.org
+      file: lab.example.org.zone
 
   search:
     - lan    # mDNS from Google Mesh DNS
-    - lamourine.org
-    - lab.lamourine.org
+    - example.org
+    - lab.example.org
