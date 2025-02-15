@@ -31,7 +31,7 @@ The CoreDNS container image is always found here:
 
     docker.io/coredns/coredns:latest
 
-
+[coredns-server-playbook]
 == `coredns-server` Playbook
 
 The goal of the `coredns-server` playbook is to install and configure
@@ -87,6 +87,10 @@ this project.
 [#coredns-server-role]
 == `coredns-server` Role
 
+This role encapsulates the process of installing a CoreDNS server on a
+host. The broad steps are described
+link:#coredns-server-playbook[above]. 
+
 .coredns-server role tree
 ----
 roles/coredns-server/
@@ -107,6 +111,9 @@ roles/coredns-server/
 5 directories, 9 files
 ----
 
+The task files are the primary driver of a playbook and role. The rest
+of the files provide resources that serve the tasks as they
+are run.
 
 === `tasks\main.yaml`
 
@@ -125,7 +132,7 @@ to a set of smaller task files, grouping the tasks functionally.
 # Coordinate creating a coredns service container
 #
 - name: Disable systemd-resolved and set static resolver file
-  import_tasks: link:roles/coredns-server/tasks/resolver.yaml[resolver.yaml]
+  import_tasks: resolver.yaml
 
 - name: Configure and set DNS Listener IP address
   import_tasks: network.yaml
