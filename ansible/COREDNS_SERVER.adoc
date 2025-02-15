@@ -10,7 +10,7 @@ containerized services. For a small to medium sized network, CoreDNS
 is much simpler to configure and operate than any of the production
 quality alternatives.
 
-toc:[]
+toc::[]
 
 == Running CoreDNS
 
