@@ -118,16 +118,40 @@ were part of a playbook, as a YAML list. The `main.yaml` file refers
 to a set of smaller task files, grouping the tasks functionally.
 
 .`tasks\main.yaml`
+[source,ansible]
 ----
-include::./roles/coredns-server/tasks/main.yaml[]
+---
+#
+# Coordinate creating a coredns service container
+#
+- name: Disable systemd-resolved and set static resolver file
+  import_tasks: link:roles/coredns-server/tasks/resolver.yaml[resolver.yaml]
+
+- name: Configure and set DNS Listener IP address
+  import_tasks: network.yaml
+
+- name: Place the Configration Files
+  import_tasks: config_files.yaml
+
+- name: Prepare Systemd Services
+  import_tasks: systemd_service.yaml
 ----
 
+Note that the first three sets of tasks are not special for
+CoreOS. They're applicable to any DNS service. The final task list is
+the important one for this series. 
+
+=== Static DNS Resolver
 
 
 
+=== DNS Listener IP Address
 
 
+=== CoreDNS Configuration
 
+
+=== Add `systemd` Container Service
 
 
 == References
