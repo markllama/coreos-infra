@@ -2,7 +2,7 @@
 = DNS Service - CoreDNS
 
 :toc:
-:toc-placement:
+:toc-placement!:
 
 https://coredns.io[CoreDNS] was developed for use in
 https://kubernetes.io/[Kubernetes] as a light-weight name server for
