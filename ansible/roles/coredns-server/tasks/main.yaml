@@ -7,9 +7,12 @@
 
 - name: Configure and set DNS Listener IP address
   import_tasks: network.yaml
+  tags:
+    - network
 
 - name: Place the Configration Files
   import_tasks: config_files.yaml
 
 - name: Prepare Systemd Services
   import_tasks: systemd_service.yaml
+
