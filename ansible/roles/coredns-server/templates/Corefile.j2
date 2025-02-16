@@ -1,7 +1,7 @@
 #
 # A simple corefile for CoreDNS
 #
-{{ dns.nameservers[ansible_hostname].ipv4 }}:53 {
+:53 {
   cache
   forward . {{ dns.forwarders|join(' ') }}
 }
