@@ -247,7 +247,7 @@ This results in three visible changes in the network setup. A new *NetworkManage
 
 [source,bash]
 ----
-$ *nmcli c*
+$ <b>nmcli c</b>
 NAME                UUID                                  TYPE      DEVICE       
 Wired connection 1  fae140b1-2605-3c97-a213-652dea32c256  ethernet  enabcm6e4ei0 
 coredns             1cb66336-bf53-4725-818b-6c48ed44fa41  macvlan   coredns      
