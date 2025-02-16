@@ -1,15 +1,8 @@
 - name: Record interface name(s)
   set_fact:
     default_interface_name: "{{ ansible_default_ipv4.interface }}"
-  tags:
-    - network
+  tags: network
 
-- name: Report the DNS listener address for "{{ ansible_hostname }}"
-  debug:
-    msg: "DNS interface for {{ ansible_hostname }} {{ dns.nameservers[ansible_hostname].ipv4 }}"
-  tags:
-    - network
-    
 - name: Create macvlan interface for DNS server
   nmcli:
     type: macvlan
@@ -23,18 +16,12 @@
       - "{{ dns.nameservers[ansible_hostname].ipv4 }}/{{ ansible_default_ipv4.prefix }}"
     autoconnect: true
     state: present
-  tags:
-    - network
+  tags: network
   register: macvlan
-
-- name: Report macvlan
-  debug:
-    msg: "{{ macvlan }}"
-  tags:
-    - network
 
 - name: Restart NetworkManager if needed
   systemd:
     name: NetworkManager
     state: restarted
   when: macvlan.changed is true
+  tags: network

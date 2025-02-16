@@ -151,7 +151,14 @@ the important one for this series.
 === Static DNS Resolver
 
 Since 2020, with the release of Fedora 33, the the local DNS resolver
-is a daemon integrated with `systemd`. 
+is a daemon integrated with `systemd`.  This daemon listens for local
+queries and is bound to port 53/UDP. The CoreDNS server needs to bind
+to the same port, so the `systemd-resolved` service must be stopped
+and disabled before `coredns` can start.
+
+This set of tasks disables the `systemd-resolved` service and replaces
+the stock `/etc/resolv.conf` file with one configured for the target
+environment.
 
 === DNS Listener IP Address
 
