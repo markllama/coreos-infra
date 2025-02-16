@@ -208,6 +208,58 @@ the servers listener address. The connection type is `macvlan` and it
 allows this interface to be configured manually while allowing the
 main interface to use DHCP for the rest of the network information.
 
+The critical step here is the second one. It creates a virtual interface dedicated to
+the DNS listener address.
+
+.`tasks/network.yaml`
+[source,yaml]
+----
+- name: Record interface name(s)
+  set_fact:
+    default_interface_name: "{{ ansible_default_ipv4.interface }}"
+  tags: network
+
+- name: Create macvlan interface for DNS server
+  nmcli:
+    type: macvlan
+    conn_name: coredns
+    ifname: coredns
+    macvlan:
+      mode: 2
+      parent: "{{ default_interface_name }}"
+    method4: manual
+    ip4:
+      - "{{ dns.nameservers[ansible_hostname].ipv4 }}/{{ ansible_default_ipv4.prefix }}"
+    autoconnect: true
+    state: present
+  tags: network
+  register: macvlan
+
+- name: Restart NetworkManager if needed
+  systemd:
+    name: NetworkManager
+    state: restarted
+  when: macvlan.changed is true
+  tags: network
+----
+
+This results in three visible changes in the network setup. A new *NetworkManager* connection, a new ip link and address.
+
+[source,bash]
+----
+$ nmcli c
+NAME                UUID                                  TYPE      DEVICE       
+Wired connection 1  fae140b1-2605-3c97-a213-652dea32c256  ethernet  enabcm6e4ei0 
+coredns             1cb66336-bf53-4725-818b-6c48ed44fa41  macvlan   coredns      
+lo                  e5795e71-0ef0-401b-a967-65efc9185b84  loopback  lo           
+$ ip link show coredns
+3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 06:71:b3:d4:46:8a brd ff:ff:ff:ff:ff:ff
+$ ip link show coredns
+3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether 06:71:b3:d4:46:8a brd ff:ff:ff:ff:ff:ff
+----
+
 === CoreDNS Configuration
 
 
