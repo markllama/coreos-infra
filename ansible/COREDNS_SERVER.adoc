@@ -246,7 +246,7 @@ the DNS listener address.
 This results in three visible changes in the network setup. A new *NetworkManager* connection, a new ip link and address.
 
 ----
-$ <b>nmcli c</b>
+$ *nmcli c*
 NAME                UUID                                  TYPE      DEVICE       
 Wired connection 1  fae140b1-2605-3c97-a213-652dea32c256  ethernet  enabcm6e4ei0 
 coredns             1cb66336-bf53-4725-818b-6c48ed44fa41  macvlan   coredns      
