@@ -115,7 +115,7 @@ The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
 are run.
 
-=== `tasks\main.yaml`
+=== `tasks/main.yaml`
 
 The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
@@ -124,7 +124,7 @@ defined in the `tasks/` subdirectory. The tasks are defined as if they
 were part of a playbook, as a YAML list. The `main.yaml` file refers
 to a set of smaller task files, grouping the tasks functionally.
 
-.`tasks\main.yaml`
+.`tasks/main.yaml`
 [source,ansible]
 ----
 ---
@@ -160,11 +160,53 @@ This set of tasks disables the `systemd-resolved` service and replaces
 the stock `/etc/resolv.conf` file with one configured for the target
 environment.
 
+.`tasks/resolver.yaml`
+[source,yaml]
+----
+- name: Disable systemd-resolved - (avoid conflict with coredns)
+  service:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+
+- name: Set static resolver file
+  template:
+    dest: /etc/resolv.conf
+    src: resolv.conf.j2
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+----
+
+.`templates/resolve.conf.j2`
+----
+#
+# Maintained by Ansible
+#
+nameserver 127.0.0.1
+{% for nameserver in dns.forwarders %}
+nameserver {{ nameserver }}
+{% endfor %}
+search {{ dns.search|join(' ') }}
+----
+
+The `resolv.conf` file directs DNS queries first to the local
+nameserver and then to the listed forwarders when the local server
+does not serve the requested domain.
+
 === DNS Listener IP Address
 
 The DNS service requires two servers for each domain. The servers are
 identified by IP address because, well they provide the name
-services. This step ensures that each server host is listening on one 
+services. This step ensures that each server host is listening on one
+of those two addresses.
+
+This task set finds the default interface on this host and then
+creates a new connection that attaches to the physical one and answers
+the servers listener address. The connection type is `macvlan` and it
+allows this interface to be configured manually while allowing the
+main interface to use DHCP for the rest of the network information.
 
 === CoreDNS Configuration
 
