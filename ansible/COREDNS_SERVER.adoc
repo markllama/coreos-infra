@@ -245,7 +245,6 @@ the DNS listener address.
 
 This results in three visible changes in the network setup. A new *NetworkManager* connection, a new ip link and address.
 
-[source,bash]
 ----
 $ <b>nmcli c</b>
 NAME                UUID                                  TYPE      DEVICE       
