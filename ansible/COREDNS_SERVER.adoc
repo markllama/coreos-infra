@@ -346,14 +346,90 @@ forward queries for zones outside of this network. It then defines the zones as 
 
 For this demonstration the zone files are static text files pulled from the `files/zones` sub-direcory of the Ansible file tree. They will be placed on the target machine in `/opt/coredns/zones/`. The `Corefile` contains the zone definitions and loads the files from there.
 
-
-
 === Add `systemd` Container Service
 
+The final step is the significant one here. So far nothing has been particulary new.
+
+As noted above, *CoreDNS* is meant to run as a container. Early in 2023 https://podman.io[*Podman*] integrated https://github.com/containers/quadlet/tree/main[*Quadlets*], a utility to create `systemd` service unit files from a container spec and run software containers as first-class services. Podman is available on at least the Debian and Fedora derived distributions since the release of Podman 4.4. Podman is an OS integrated alternative to *Docker*. For the purposes of this document, the only important feature is the ability to run standard software containers as `systemd` services.
+
+The whole point of this series was to get here: Creating a system
+service on Fedora CoreOS. It appears pretty anticlimactic. It's rather
+like painting a room: All the real work is in the preparation. All
+that's left to do now is to create one container spec file, reload the
+`systemd` daemon and enable/start the service.
+
+.link:roles/coredns-server/tasks/systemd_service.yaml[`tasks/systemd_service.yaml`]
+[source,yaml]
+----
+- name: Set systemd container file
+  copy:
+    dest: /etc/containers/systemd/coredns.container
+    src: coredns.container
+    owner: root
+    group: root
+    mode: 644
+  register: create_unit
+
+- name: Reload Systemd Units
+  systemd_service:
+    daemon_reload: true
+  notify: Restart CoreDNS Service
+  #when: create_unit.changed is true
+
+- name: Enable and Start CoreDNS container
+  service:
+    name: coredns.service
+    state: started
+    enabled: true
+----
+
+The container definition is a static file. The Podman components
+integrated into `systemd` services take this file and transform it
+into a `systemd` service unit file.
+
+.link:roles/coredns-server/files/coredns.container[`files/coredns.container`]
+[source,ini]
+----
+[Unit]
+Description=CoreDNS Service Container
+After=network-online.target
+
+[Container]
+Image=docker.io/coredns/coredns:latest
+
+# Expect Corefile and zones/ within the working dir
+PodmanArgs=--workdir=/root
+
+PublishPort=53:53/udp
+#PublishPort=953:953/udp
+#PublishPort=53:53/tcp
+#PublishPort=953:953/tcp
+
+# Mount the coredns config dir into the container workingdir
+Volume=/opt/coredns:/root
+
+[Install]
+# Enable in multi-user boot
+WantedBy=multi-user.target default.target
+
+# sudo podman run --detach --rm \
+#       --name coredns \
+#       --publish 53:53/udp \
+#       --volume=/opt/coredns/:/root/ \
+#       --workdir=/root \
+#       coredns/coredns -conf /root/Corefile
+----
+
+This file is formatted like any other `systemd` unit file. Only the
+`[Container]` section is special to container service operation.
 
 == References
 
 * https://coredns.io[CoreDNS]
+* https://fedoraproject.org/coreos[CoreOS]
+* https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]
+* https://docker.io[Docker]
 * https://www.isc.org/bind/[ISC Bind]
 * https://kerbernetes.io[Kubernetes]
-* https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]
+* https://podman.io[Podman]
+* https://github.com/containers/quadlet[Quadlet]
