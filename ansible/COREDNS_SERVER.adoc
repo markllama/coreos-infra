@@ -89,6 +89,10 @@ configured https://www.isc.org/bind/[ISC Bind]. They could be produced
 mechanically from other databases but that is outside the scope of
 this project.
 
+NOTE: The `dns_services.yaml` file contains *global* variables that
+are not part of the playbook. They are stored at the top of the
+`ansible` tree along with the zone files in https://github.com/markllama/coredns-infra/ansible/files/zones/[`files/zones`]
+
 [#dnsservices-file]
 .link:https://github.com/markllama/coreos-infra/blob/main/ansible/vars/dns_services.yaml[vars/dns_services.yaml]
 [source.yaml]
