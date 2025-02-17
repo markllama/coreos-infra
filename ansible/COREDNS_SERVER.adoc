@@ -157,7 +157,7 @@ The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
 are run.
 
-==== The `main` Task List
+// === The `main` Task List
 
 The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
