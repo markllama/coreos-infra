@@ -530,13 +530,23 @@ also need to be updated.
 
 == References
 
-* https://coredns.io[CoreDNS Home Page]
-* https://github.com/coredns/coredns[CoreDNS on Github]
-* https://hub.docker.com/r/coredns/coredns/[CoreDNS Repository on Dockerhub]
-* https://fedoraproject.org/coreos[CoreOS]
-* https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]
-* https://docker.io[Docker]
-* https://www.isc.org/bind/[ISC Bind]
-* https://kerbernetes.io[Kubernetes]
-* https://podman.io[Podman]
-* https://github.com/containers/quadlet[Quadlet]
+* https://coredns.io[CoreDNS] +
+  The CoreDNS Project home page
+* https://github.com/coredns/coredns[CoreDNS on Github] +
+  The source code repository for CoreDNS
+* https://hub.docker.com/r/coredns/coredns/[CoreDNS Repository on Dockerhub] +
+  The repository of CoreDNS container images
+* https://fedoraproject.org/coreos[CoreOS] +
+  The Fedora CoreOS Project home page
+* https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files] +
+  A reference to the specification for standard DNS zone files
+* https://docker.com[Docker Inc.] +
+  The home page for Docker Inc.
+* https://www.isc.org/bind/[ISC Bind] +
+  The home page for ISC Bind
+* https://kerbernetes.io[Kubernetes] +
+  The Kubernetes project page
+* https://podman.io[Podman] +
+  The Podman project page
+* https://github.com/containers/quadlet[Quadlet] +
+  The Quadlet project source repository **deprecated**
