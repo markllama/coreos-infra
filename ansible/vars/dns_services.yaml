@@ -6,17 +6,15 @@ dns:
   nameservers:
     pi4-1:
       fqdn: ns1.example.org
-      device: enabcm6e4ei0
       ipv4: 192.168.2.10
     pi4-2:
       fqdn: ns1.example.org
-      device: enabcm6e4ei0
       ipv4: 192.168.2.11
 
   forwarders:
     - 192.168.2.1
-    - 1.1.1.1
-    - 1.0.0.1
+    - 4.2.2.1     # Level3 caching DNS IPv4 address
+    - 1.1.1.1     # Cloudflare caching DNS IPv4 address
     
   zones:
     - fqdn: example.org
