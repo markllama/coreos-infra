@@ -64,7 +64,7 @@ modules that
 .link:coredns-server-pb.yaml[`coredns-server-pb.yaml`]
 [source,yaml]
 ----
-include::coredns-server-pb.yaml
+include::coredns-server-pb.yaml[]
 ---
 #
 # The playbook creates a DNS server on the target hosts using CoreDNS
