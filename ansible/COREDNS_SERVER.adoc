@@ -89,6 +89,42 @@ configured https://www.isc.org/bind/[ISC Bind]. They could be produced
 mechanically from other databases but that is outside the scope of
 this project.
 
+.link:vars/dns_services.yaml[vars/dns_services.yaml]
+[source.yaml]
+----
+---
+#
+# DNS services for example.com network
+#
+dns:
+  nameservers:
+    pi4-1:
+      fqdn: ns1.example.org
+      device: enabcm6e4ei0
+      ipv4: 192.168.2.10
+    pi4-2:
+      fqdn: ns1.example.org
+      device: enabcm6e4ei0
+      ipv4: 192.168.2.11
+
+  forwarders:
+    - 192.168.2.1
+    - 1.1.1.1
+    - 1.0.0.1
+    
+  zones:
+    - fqdn: example.org
+      file: example.org.zone
+    - fqdn: lab.example.org
+      file: lab.example.org.zone
+
+  search:
+    - lan    # mDNS from Google Mesh DNS
+    - example.org
+    - lab.example.org
+----
+
+
 [#coredns-server-role]
 == `coredns-server` Role
 
@@ -252,20 +288,23 @@ This results in three visible changes in the network setup. A new *NetworkManage
 
 [source,bash]
 ----
-$ nmcli c
-NAME                UUID                                  TYPE      DEVICE       
-Wired connection 1  fae140b1-2605-3c97-a213-652dea32c256  ethernet  enabcm6e4ei0 
-coredns             1cb66336-bf53-4725-818b-6c48ed44fa41  macvlan   coredns      
-lo                  e5795e71-0ef0-401b-a967-65efc9185b84  loopback  lo           
-$ ip link show coredns
-3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+$ nmcli --fields connection.id,connection.type,macvlan.parent,macvlan.mode,ipv4.addresses c show coredns
+connection.id:                          coredns
+connection.type:                        macvlan
+macvlan.parent:                         enabcm6e4ei0
+macvlan.mode:                           2 (bridge)
+ipv4.addresses:                         192.168.2.10/24
+
+$ ip address show coredns
+3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
     link/ether 06:71:b3:d4:46:8a brd ff:ff:ff:ff:ff:ff
-$ ip link show coredns
-3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 06:71:b3:d4:46:8a brd ff:ff:ff:ff:ff:ff
+    inet 192.168.2.10/24 brd 192.168.2.255 scope global noprefixroute coredns
+       valid_lft forever preferred_lft forever
 ----
 
 === CoreDNS Configuration
+
+The system is now able to run a DNS server answering on one of the listner IP addresses specified in the `vars/dns_servers.yaml` data file.
 
 
 === Add `systemd` Container Service
