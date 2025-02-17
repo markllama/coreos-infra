@@ -421,7 +421,36 @@ WantedBy=multi-user.target default.target
 ----
 
 This file is formatted like any other `systemd` unit file. Only the
-`[Container]` section is special to container service operation.
+`[Container]` section is special to container service operation. That
+section specifies the location of the service container image and the
+run-time parameters. The sample above includes the corresponding
+command to make the mapping from CLI to configuration parameters.
+
+This service starts after the network is active and is meant to be
+active for the *multi-user* target. It listens on port 53/udp. It
+could be configured for TCP and for SSL as well if the `Corefile`
+configuration calls for it. The container maps the system
+`/opt/coredns` directory to `/root` inside the container and instructs
+the container to set that as the working directory before starting the
+container. Without any arguments
+
+[#deployment]
+== Deployment and Operation
+
+All the parts are in place now:
+
+* Disable `systemd-resolved` bound to port 53/udp: &check; &#x1F5F9;
+* Configure the nameserver IP address
+* Place the CoreDNS configuration and zone files
+* Define a `systemd` service unit to manage the nameserver process
+
+    # Confirm the planned steps
+    ansible-playbook --check coredns-server-pb.yaml
+
+    # Apply the playbook to the server hosts
+    ansible-playbook coredns-server-pb.yaml
+
+
 
 == References
 
