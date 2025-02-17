@@ -245,14 +245,14 @@ the DNS listener address.
 
 This results in three visible changes in the network setup. A new *NetworkManager* connection, a new ip link and address.
 
-[source,bash]
+[source]
 ----
 $ #nmcli c#
 NAME                UUID                                  TYPE      DEVICE       
 Wired connection 1  fae140b1-2605-3c97-a213-652dea32c256  ethernet  enabcm6e4ei0 
 coredns             1cb66336-bf53-4725-818b-6c48ed44fa41  macvlan   coredns      
 lo                  e5795e71-0ef0-401b-a967-65efc9185b84  loopback  lo           
-$ #ip link show coredns#
+$ ip link show coredns
 3: coredns@enabcm6e4ei0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
     link/ether 06:71:b3:d4:46:8a brd ff:ff:ff:ff:ff:ff
 $ #ip link show coredns#
