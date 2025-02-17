@@ -548,5 +548,5 @@ also need to be updated.
   The Kubernetes project page
 * https://podman.io[Podman] +
   The Podman project page
-* https://github.com/containers/quadlet[Quadlet] +
-  The Quadlet project source repository **deprecated**
+* https://github.com/containers/quadlet[Quadlet] ** deprecated** +
+  The Quadlet project source repository
