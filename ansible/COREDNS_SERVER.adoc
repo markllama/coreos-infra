@@ -10,6 +10,20 @@ containerized services. For a small to medium sized network, CoreDNS
 is much simpler to configure and operate than any of the production
 quality alternatives.
 
+This post is meant to demonstrate the use of systemd services running
+as software containers on https://fedoraproject.org/coreos[Fedora
+CoreOS]. However this technique is applicable to any host that has
+https://podman.io[`Podman`] version 4.4.0+ installed and is
+configurable by https://ansible.io[`Ansible`].
+
+If you are curious about provisioning Fedora CoreOS for this
+demonstration, see the previous series of posts for guidance:
+
+* https://electron-swamp.blogspot.com/2025/01/the-case-for-coreos-network.html[The case for CoreOS]
+* https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[CoreOS Configuration: Less is the Right Amount]
+* https://electron-swamp.blogspot.com/2025/01/provisioning-coreos-h1first-childmargin.html[Provisioning CoreOS - Intel and Raspberry Pi 4]
+
+
 toc::[]
 
 == Running CoreDNS
