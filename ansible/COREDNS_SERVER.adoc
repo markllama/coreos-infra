@@ -61,7 +61,7 @@ possible to contain the entire playbook in a single file, but it is
 usually helpful to have the playbook use a *role*. Roles are re-usable
 modules that 
 
-.link:coredns-server-pb.yaml[`coredns-server-pb.yaml`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/coredns-server-pb.yaml[`coredns-server-pb.yaml`]
 [source,yaml]
 ----
 ---
@@ -90,7 +90,7 @@ mechanically from other databases but that is outside the scope of
 this project.
 
 [#dnsservices-file]
-.link:vars/dns_services.yaml[vars/dns_services.yaml]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/vars/dns_services.yaml[vars/dns_services.yaml]
 [source.yaml]
 ----
 ---
@@ -166,7 +166,7 @@ defined in the `tasks/` subdirectory. The tasks are defined as if they
 were part of a playbook, as a YAML list. The `main.yaml` file refers
 to a set of smaller task files, grouping the tasks functionally.
 
-.link:roles/coredns-server/tasks/main.yaml[`tasks/main.yaml`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/tasks/main.yaml[`tasks/main.yaml`]
 [source,ansible]
 ----
 ---
@@ -202,7 +202,7 @@ This set of tasks disables the `systemd-resolved` service and replaces
 the stock `/etc/resolv.conf` file with one configured for the target
 environment.
 
-.link:roles/coredns-server/tasks/resolver.yaml[`tasks/resolver.yaml`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/tasks/resolver.yaml[`tasks/resolver.yaml`]
 [source,yaml]
 ----
 - name: Disable systemd-resolved - (avoid conflict with coredns)
@@ -221,7 +221,7 @@ environment.
     backup: true
 ----
 
-.link:roles/coredns-server/templates/resolve.conf.j2[`templates/resolve.conf.j2`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/templates/resolve.conf.j2[`templates/resolve.conf.j2`]
 ----
 #
 # Maintained by Ansible
@@ -253,7 +253,7 @@ main interface to use DHCP for the rest of the network information.
 The critical step here is the second one. It creates a virtual interface dedicated to
 the DNS listener address.
 
-.link:roles/coredns-server/tasks/network.yaml[`tasks/network.yaml`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/tasks/network.yaml[`tasks/network.yaml`]
 [source,yaml]
 ----
 - name: Record interface name(s)
@@ -303,7 +303,7 @@ $ ip address show coredns
        valid_lft forever preferred_lft forever
 ----
 
-=== CoreDNS Configuration
+=== Set CoreDNS Configuration
 
 The system is now able to run a DNS server answering on one of the listner IP addresses specified in the `vars/dns_servers.yaml` data file.
 
@@ -326,7 +326,7 @@ The primary configuration file is the `Corefile`. It is placed at the root of th
 The `Corefile` contains the root zone cache so that the server can
 forward queries for zones outside of this network. It then defines the zones as described in the link:#dnsservices-file[`dns_services.yaml`] file.
 
-.link:roles/coredns-server/templates/Corefile.j2[`templates/Corefile.j2`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/templates/Corefile.j2[`templates/Corefile.j2`]
 [source,jinja2]
 ----
 #
@@ -358,7 +358,7 @@ like painting a room: All the real work is in the preparation. All
 that's left to do now is to create one container spec file, reload the
 `systemd` daemon and enable/start the service.
 
-.link:roles/coredns-server/tasks/systemd_service.yaml[`tasks/systemd_service.yaml`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/tasks/systemd_service.yaml[`tasks/systemd_service.yaml`]
 [source,yaml]
 ----
 - name: Set systemd container file
@@ -387,7 +387,7 @@ The container definition is a static file. The Podman components
 integrated into `systemd` services take this file and transform it
 into a `systemd` service unit file.
 
-.link:roles/coredns-server/files/coredns.container[`files/coredns.container`]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/files/coredns.container[`files/coredns.container`]
 [source,ini]
 ----
 [Unit]
@@ -435,7 +435,7 @@ the container to set that as the working directory before starting the
 container. Without any arguments
 
 [#deployment]
-== Deployment and Operation
+== Deployment
 
 All the parts are in place now:
 
@@ -449,6 +449,33 @@ All the parts are in place now:
 
 .Deploy the CoreDNS service
     ansible-playbook coredns-server-pb.yaml
+
+[#operation]
+== Operation
+
+Over time the zones that are served will need to be updated. Make the
+needed changes to the `Corefile` zone files and then run the playbook
+with the *zones* tag.
+
+.Update the DNS configuration and content
+    ansible-playbook --tags zones coredns-server-pb.yaml
+
+With this playbook, changes to the `Corefile` or zone files will
+trigger a restart of the `coredns` service. CoreDNS does include two
+plugins, *reload* and *auto*. The reload plugin tells the daemon to
+poll the `Corefile` periodically and to reload when it detects
+changes. the auto plugin does the same thing for zone files. These can
+be added later if needed, but the downtime associated with a service
+restart on a small network is neglegable.
+
+In a larger network with servers geographically disbursed, they would
+also be set up as primary/secondary and would have zone transfers
+configured. In this example the network is localized, assumed to be a
+single site. Since both servers are present it is possible just to
+update them both at the same time and avoid the complexity of
+primary/secondary. Adding that would be a reasonable update.
+
+== Summary
 
 
 
