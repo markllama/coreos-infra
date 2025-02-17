@@ -90,7 +90,7 @@ mechanically from other databases but that is outside the scope of
 this project.
 
 [#dnsservices-file]
-.link:https://github.com/markllama/coreos-infra/blob/main/ansible/roles/coredns-server/vars/dns_services.yaml[vars/dns_services.yaml]
+.link:https://github.com/markllama/coreos-infra/blob/main/ansible/vars/dns_services.yaml[vars/dns_services.yaml]
 [source.yaml]
 ----
 ---
