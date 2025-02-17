@@ -19,9 +19,9 @@ configurable by https://ansible.io[`Ansible`].
 If you are curious about provisioning Fedora CoreOS for this
 demonstration, see the previous series of posts for guidance:
 
-1. https://electron-swamp.blogspot.com/2025/01/the-case-for-coreos-network.html[The Case for CoreOS]
-1. https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[CoreOS Configuration: Less is the Right Amount]
-1. https://electron-swamp.blogspot.com/2025/01/provisioning-coreos-h1first-childmargin.html[Provisioning CoreOS - Intel and Raspberry Pi 4]
+. https://electron-swamp.blogspot.com/2025/01/the-case-for-coreos-network.html[The Case for CoreOS]
+. https://electron-swamp.blogspot.com/2025/01/coreos-configuration-less-is-right.html[CoreOS Configuration: Less is the Right Amount]
+. https://electron-swamp.blogspot.com/2025/01/provisioning-coreos-h1first-childmargin.html[Provisioning CoreOS - Intel and Raspberry Pi 4]
 
 '''
 
@@ -62,10 +62,10 @@ a `systemd` service.
 
 The deployment steps can be grouped into four related sets of tasks:
 
-1. Switch to static resolver
-1. Configure network interface
-1. Deploy CoreDNS configuration
-1. Configure `systemd` service
+. Switch to static resolver
+. Configure network interface
+. Deploy CoreDNS configuration
+. Configure `systemd` service
 
 For clarities sake these four are broken down into separate task files
 in the `coredns-server` role. These are detailed in corresponding
