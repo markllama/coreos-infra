@@ -439,10 +439,10 @@ container. Without any arguments
 
 All the parts are in place now:
 
-* &check; Disable `systemd-resolved` bound to port 53/udp: &#x1F5F9;
-* &checkbox; Configure the nameserver IP address
-* &checkbold; Place the CoreDNS configuration and zone files
-* Define a `systemd` service unit to manage the nameserver process
+* &check; Disable `systemd-resolved` bound to port 53/udp
+* &check; Configure the nameserver IP address
+* &check; Place the CoreDNS configuration and zone files
+* &check; Define a `systemd` service unit to manage the nameserver process
 
     # Confirm the planned steps
     ansible-playbook --check coredns-server-pb.yaml
