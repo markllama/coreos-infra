@@ -444,10 +444,10 @@ All the parts are in place now:
 * &check; Place the CoreDNS configuration and zone files
 * &check; Define a `systemd` service unit to manage the nameserver process
 
-    # Confirm the planned steps
+.Confirm the changes to apply
     ansible-playbook --check coredns-server-pb.yaml
 
-    # Apply the playbook to the server hosts
+.Deploy the CoreDNS service
     ansible-playbook coredns-server-pb.yaml
 
 

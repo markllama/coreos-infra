@@ -17,6 +17,7 @@
     owner: root
     group: root
   notify: Restart CoreDNS Service
+  tags: zones
 
 - name: Create coredns zone file directory
   file:
@@ -32,5 +33,4 @@
     src: "zones/{{ item.file }}"
   loop: "{{ dns.zones }}"
   notify: Restart CoreDNS Service
-  tags:
-    - zones
+  tags: zones
