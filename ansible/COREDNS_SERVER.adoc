@@ -439,9 +439,9 @@ container. Without any arguments
 
 All the parts are in place now:
 
-* Disable `systemd-resolved` bound to port 53/udp: &check; &#x1F5F9;
-* Configure the nameserver IP address
-* Place the CoreDNS configuration and zone files
+* &check; Disable `systemd-resolved` bound to port 53/udp: &#x1F5F9;
+* &checkbox; Configure the nameserver IP address
+* &checkbold; Place the CoreDNS configuration and zone files
 * Define a `systemd` service unit to manage the nameserver process
 
     # Confirm the planned steps
