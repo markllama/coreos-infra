@@ -61,7 +61,7 @@ possible to contain the entire playbook in a single file, but it is
 usually helpful to have the playbook use a *role*. Roles are re-usable
 modules that 
 
-.`coredns-server-pb.yaml`
+.link:coredns-server-pb.yaml[`coredns-server-pb.yaml`]
 [source,yaml]
 ----
 ---
