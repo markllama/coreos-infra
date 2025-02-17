@@ -37,7 +37,7 @@ The CoreDNS container image is always found here:
     docker.io/coredns/coredns:latest
 
 [coredns-server-playbook]
-== `coredns-server` Playbook
+== The `coredns-server` Playbook
 
 The goal of the `coredns-server` playbook is to install and configure
 CoreDNS on a set of servers. The servers need to listen for and
@@ -127,7 +127,7 @@ dns:
 
 
 [#coredns-server-role]
-== `coredns-server` Role
+== The `coredns-server` Role
 
 This role encapsulates the process of installing a CoreDNS server on a
 host. The broad steps are described
