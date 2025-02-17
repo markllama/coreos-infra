@@ -64,7 +64,6 @@ modules that
 .link:coredns-server-pb.yaml[`coredns-server-pb.yaml`]
 [source,yaml]
 ----
-include::coredns-server-pb.yaml[]
 ---
 #
 # The playbook creates a DNS server on the target hosts using CoreDNS
@@ -90,6 +89,7 @@ configured https://www.isc.org/bind/[ISC Bind]. They could be produced
 mechanically from other databases but that is outside the scope of
 this project.
 
+[#dnsservices-file]
 .link:vars/dns_services.yaml[vars/dns_services.yaml]
 [source.yaml]
 ----
@@ -166,7 +166,7 @@ defined in the `tasks/` subdirectory. The tasks are defined as if they
 were part of a playbook, as a YAML list. The `main.yaml` file refers
 to a set of smaller task files, grouping the tasks functionally.
 
-.`tasks/main.yaml`
+.link:roles/coredns-server/tasks/main.yaml[`tasks/main.yaml`]
 [source,ansible]
 ----
 ---
@@ -202,7 +202,7 @@ This set of tasks disables the `systemd-resolved` service and replaces
 the stock `/etc/resolv.conf` file with one configured for the target
 environment.
 
-.`tasks/resolver.yaml`
+.link:roles/coredns-server/tasks/resolver.yaml[`tasks/resolver.yaml`]
 [source,yaml]
 ----
 - name: Disable systemd-resolved - (avoid conflict with coredns)
@@ -221,7 +221,7 @@ environment.
     backup: true
 ----
 
-.`templates/resolve.conf.j2`
+.link:roles/coredns-server/templates/resolve.conf.j2[`templates/resolve.conf.j2`]
 ----
 #
 # Maintained by Ansible
@@ -253,7 +253,7 @@ main interface to use DHCP for the rest of the network information.
 The critical step here is the second one. It creates a virtual interface dedicated to
 the DNS listener address.
 
-.`tasks/network.yaml`
+.link:roles/coredns-server/tasks/network.yaml[`tasks/network.yaml`]
 [source,yaml]
 ----
 - name: Record interface name(s)
@@ -306,6 +306,46 @@ $ ip address show coredns
 === CoreDNS Configuration
 
 The system is now able to run a DNS server answering on one of the listner IP addresses specified in the `vars/dns_servers.yaml` data file.
+
+The CoreDNS configuration consists of a single configuration file and a set of zone files.
+The entire configuration resides in a single directory tree `/opt/coredns`.
+
+.`/opt/coredns`
+----
+/opt/coredns/
+├── Corefile
+└── zones
+    ├── example.org.zone
+    └── lab.example.org.zone
+
+2 directories, 3 files
+----
+
+The primary configuration file is the `Corefile`. It is placed at the root of the `/opt/coredns/` tree. When the daemon starts it will use this as the current working directory. It reads the initial config from there.
+
+The `Corefile` contains the root zone cache so that the server can
+forward queries for zones outside of this network. It then defines the zones as described in the link:#dnsservers-file[`dns_servers.yaml`] file.
+
+.link:roles/coredns-server/templates/Corefile.j2[`templates/Corefile.j2`]
+[source,jinja2]
+----
+#
+# A simple corefile for CoreDNS
+#
+.:53 {
+  cache
+  forward . {{ dns.forwarders|join(' ') }}
+}
+
+{% for zone in dns.zones %}
+{{ zone.fqdn }}:53 {
+  file zones/{{ zone.file }}
+}
+{% endfor %}
+----
+
+For this demonstration the zone files are static text files pulled from the `files/zones` sub-direcory of the Ansible file tree. They will be placed on the target machine in `/opt/coredns/zones/`. The `Corefile` contains the zone definitions and loads the files from there.
+
 
 
 === Add `systemd` Container Service
