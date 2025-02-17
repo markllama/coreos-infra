@@ -157,7 +157,7 @@ The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
 are run.
 
-=== `tasks/main.yaml`
+=== The `main` Task List
 
 The task files are the primary driver of a playbook and role. The rest
 of the files provide resources that serve the tasks as they
@@ -190,7 +190,7 @@ Note that the first three sets of tasks are not special for
 CoreOS. They're applicable to any DNS service. The final task list is
 the important one for this series. 
 
-=== Static DNS Resolver
+=== Disable Dynamic DNS Resolver Service
 
 Since 2020, with the release of Fedora 33, the the local DNS resolver
 is a daemon integrated with `systemd`.  This daemon listens for local
@@ -237,7 +237,7 @@ The `resolv.conf` file directs DNS queries first to the local
 nameserver and then to the listed forwarders when the local server
 does not serve the requested domain.
 
-=== DNS Listener IP Address
+=== Set DNS Listener IP Address
 
 The DNS service requires two servers for each domain. The servers are
 identified by IP address because, well they provide the name
