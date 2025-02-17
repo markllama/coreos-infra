@@ -485,6 +485,8 @@ changes. the auto plugin does the same thing for zone files. These can
 be added later if needed, but the downtime associated with a service
 restart on a small network is neglegable.
 
+== To Do
+
 In a larger network with servers geographically disbursed, they would
 also be set up as primary/secondary and would have zone transfers
 configured. In this example the network is localized, assumed to be a
@@ -492,14 +494,45 @@ single site. Since both servers are present it is possible just to
 update them both at the same time and avoid the complexity of
 primary/secondary. Adding that would be a reasonable update.
 
+The CoreDNS container path contains the `latest` tag and is embedded
+in the `coredns.container` systemd file. Ideally the CoreDNS version
+would be configurable by setting a variable in a file in
+`/etc/sysconfig/coredns`. It is not clear if this is possible yet
+using a Podman quadlet.
+
 == Summary
 
-When this procedure is complete
+When this procedure is complete there will be two new DNS servers
+running CoreDNS. They will serve the configured zones and will forward
+any queries for other domains upstream for for resolution. The
+contents can be updated as needed by updating the zone files and new
+zones can be added by editing the `dns_servers.yaml` file and adding
+new zone files.
 
+The DNS service can be managed on the hosts as a systemd service like
+any other. Restarts will automatically check and update the container
+image. If the host is running Fedora CoreOS it will update and reboot
+whenever an image update is made available. The OS and CoreDNS service
+software are decoupled so that there is no possibility of a dependency
+conflict between them. Both can be rolled back automically to the last
+known good version.
+
+The CoreDNS version is allowed to update to the latest version on each
+restart. If the version must be rolled back, the last known good
+version can be found in the
+https://github.com/coredns/coredns/releases[CoreDNS Releases] on
+Github. Update the release tag in the `coredns.container` file and
+re-run the playbook to restore service using the required release.
+
+The DHCP servers for the network will need to be configured with the
+new nameserver information, and any manually configured systems will
+also need to be updated.
 
 == References
 
-* https://coredns.io[CoreDNS]
+* https://coredns.io[CoreDNS Home Page]
+* https://github.com/coredns/coredns[CoreDNS on Github]
+* https://hub.docker.com/r/coredns/coredns/[CoreDNS Repository on Dockerhub]
 * https://fedoraproject.org/coreos[CoreOS]
 * https://en.wikipedia.org/wiki/Zone_file[DNS Zone Files]
 * https://docker.io[Docker]
