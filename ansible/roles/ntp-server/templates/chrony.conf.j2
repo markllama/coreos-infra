@@ -24,9 +24,15 @@ rtcsync
 
 # Allow NTP client access from local network.
 #allow 192.168.0.0/16
+{% for network in ntp.allow_clients %}
+allow {{ network }}
+{% endfor %}
 
 # Serve time even if not synchronized to a time source.
-#local stratum 10
+# local stratum 10
+{% if ntp.stratum is defined %}
+local stratum {{ ntp.stratum }}
+{% endif %}
 
 # Require authentication (nts or key option) for all NTP sources.
 #authselectmode require
