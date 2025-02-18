@@ -60,7 +60,7 @@ notices because they define the network. If they're down no one says "oh, DNS is
 
 ## Service Installation
 
-* DNS - CoreDNS
+* link:ansible/COREDNS_SERVER.adoc[DNS - CoreDNS]
 * NTP - Chrony
 * DHCP - TBD
 * Monitoring - TBD
