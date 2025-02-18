@@ -1,0 +1,15 @@
+---
+#
+# The playbook creates a DNS server on the target hosts using CoreDNS
+# It populates the zone files from files/zones
+#
+- name: Chrony Time Servers
+  hosts: timeservers
+  become: true
+
+  vars_files:
+    - ntp_services.yaml
+
+  roles:
+    - ntp-server
+

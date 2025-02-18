@@ -13,3 +13,8 @@ dnsservers:
   hosts:
     infra1:
     infra2:
+
+timeservers:
+  hosts:
+    infra1:
+    infra2:

@@ -1,0 +1,33 @@
+= Managing Infrastructure Services with Ansible
+
+== Name Service(DNS) - CoreDNS
+
+CoreDNS 
+
+== Time Service(NTP) - Chrony
+
+== Boot Services
+
+=== IP Address Assignment - DHCP
+
+=== Network Boot and Install - PXE
+
+== Zero Trust Network - Cloudflare
+
+=== VPN Tunnel - `cloudflared`
+
+=== Known Network Beacon - Nginx
+
+== Identity Services - FreeIPA
+
+= References
+
+* Ansible
+* CoreDNS
+* Chrony
+* `cloudflared`
+* `dhcpd`
+* FreeIPA
+* Nginx
+
+
